@@ -1,0 +1,9 @@
+<ol class="breadcrumb float-sm-right">
+    {% for item in breadcrumb %}
+        {% if loop.last or not item.url %}
+            <li class="breadcrumb-item active">{{ item.title }}</li>
+        {% else %}
+            <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>
+        {% endif %}
+    {% endfor %}
+</ol>

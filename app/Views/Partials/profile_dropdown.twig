@@ -1,0 +1,67 @@
+{# app/Views/Partials/profile_dropdown.twig #}
+{% import "Partials/macros.twig" as macros %}
+
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle d-flex align-items-center"
+     href="#"
+     id="profileDropdown"
+     role="button"
+     data-toggle="dropdown"
+     aria-haspopup="true"
+     aria-expanded="false">
+     <span class="position-relative">
+         <img src="{{ user.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
+           alt="Avatar"
+           class="img-circle elevation-2"
+           style="width:28px;height:28px;object-fit:cover;border:2px solid #eaeaea;">
+               {% if user.status == 'Ativo' %}
+                  <span class="position-absolute" style="bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#28a745;border:1px solid #fff;display:inline-block;"></span>
+               {% endif %}
+     </span>
+      <span class="pl-2 d-flex justify-content-center" style="min-width: 0;">
+       {{ user.nome|split(' ')[0]|capitalize }}
+       {{ macros.badge_cargo(user.cargo) }}
+     </span>
+  </a>
+  <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="profileDropdown">
+    <div class="dropdown-header text-center p-3">
+      <img src="{{ user.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
+           alt="Avatar"
+           class="img-circle mb-2 shadow"
+           style="width:54px;height:54px;object-fit:cover;">
+      <div>{{ user.nome }}</div>
+      <div class="text-muted small">{{ user.cel }}</div>
+      <div class="text-muted small">{{ user.email }}</div>
+      <div>
+        {{ macros.badge_cargo(user.cargo) }}
+        {{ macros.badge_status(user.status) }}
+      </div>
+    </div>
+    {% if user.cargo == 'Admin' %}
+      <a class="dropdown-item" href="/admin/dashboard">
+        <i class="fas fa-tachometer-alt mr-2 text-primary"></i> Dashboard
+      </a>
+    {% endif %}
+
+
+
+ {% if user.cargo == 'Admin' %}
+  <a class="dropdown-item" href="/admin/users/show/{{ user.id }}">
+    <i class="fas fa-user-circle mr-2 text-success"></i> Meu Perfil
+  </a>
+{% else %}
+  <a class="dropdown-item" href="/profile">
+    <i class="fas fa-user-circle mr-2 text-success"></i> Meu Perfil
+  </a>
+{% endif %}
+
+
+
+
+
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item text-danger" href="/logout">
+      <i class="fas fa-sign-out-alt mr-2"></i> Sair
+    </a>
+  </div>
+</li>

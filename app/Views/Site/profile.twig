@@ -1,0 +1,78 @@
+{% extends "layout_site.twig" %}
+{% import "Partials/macros.twig" as macros %}
+{% block title %}Meu Perfil{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+   <div class="col-12 col-md-10 col-lg-7">
+    <div class="card shadow-sm border-0">
+          {# --- CARD-HEADER AZUL/PRIMARY --- #}
+      <div class="card-header bg-primary text-white d-flex align-items-center">
+        <h3 class="card-title mb-0">
+          <i class="fas fa-user-plus"></i> Visualização de cadastro
+        </h3>
+      </div>
+      <div class="card-body">
+           <div class="d-flex flex-column flex-md-row align-items-center mb-4">
+                    <img
+                      src="{{ user.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
+                      alt="Avatar"
+                      class="rounded-circle border shadow-sm mb-3 mb-md-0"
+                      style="width:130px; height:130px; object-fit:cover;">
+                      
+                    <div class="ml-md-4 text-center text-md-left">
+                      <h4 class="mb-1">{{ user.nome }}</h4>
+                      <div class="mb-2">
+                        {{ macros.badge_cargo(user.cargo) }}
+                        {{ macros.badge_status(user.status) }}
+                      </div>
+                    </div>
+                  </div>
+        <table class="table table-borderless mb-3">
+          <tr>
+            <th class="text-right">Nome:</th>
+            <td>{{ user.nome }}</td>
+          </tr>
+          <tr>
+            <th class="text-right">E-mail:</th>
+            <td>{{ user.email }}</td>
+          </tr>
+          <tr>
+            <th class="text-right">Celular:</th>
+            <td>{{ user.cel|cel_format }}</td>
+          </tr>
+          <tr>
+            <th class="text-right">CPF:</th>
+            <td>{{ user.cpf|cpf_format }}</td>
+          </tr>
+          <tr>
+            <th class="text-right">Nascimento:</th>
+            <td>{{ user.data_nascimento|date("d/m/Y") }}</td>
+          </tr>
+          <tr>
+            <th class="text-right">Endereço:</th>
+            <td>
+              {{ user.logradouro }}
+              <br>
+              {{ user.cidade }} {% if user.uf %}/ {{ user.uf }}{% endif %}
+              <br>
+              {% if user.cep %}CEP: {{ user.cep|cep_format }}{% endif %}
+            </td>
+          </tr>
+        </table>
+        <div class="d-flex flex-column flex-md-row" style="gap:.75rem;">
+          <a href="/profile/edit" class="btn btn-primary"><i class="fas fa-edit mr-1"></i> Editar Perfil</a>
+          <a href="/" class="btn btn-alert alert-warning"><i class="fas fa-chevron-left"></i> Página inicial</a>
+        </div>
+      </div>
+    </div>
+    {% if flash_success %}
+      <div class="alert alert-success mt-3">{{ flash_success }}</div>
+    {% endif %}
+    {% if flash_error %}
+      <div class="alert alert-danger mt-3">{{ flash_error }}</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

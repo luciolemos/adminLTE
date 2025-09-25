@@ -1,0 +1,10 @@
+{% extends 'admin_base.twig' %}
+
+{% block title %}Página Genérica{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>{{ title|default('Relatórios') }}</h1>
+  <p>Este conteúdo foi carregado dinamicamente com base no slug.</p>
+</div>
+{% endblock %}

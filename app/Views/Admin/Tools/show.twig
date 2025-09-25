@@ -1,0 +1,95 @@
+{% extends "layout_admin.twig" %}
+{% block title %}Detalhes da Ferramenta{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  <style>
+    .card-footer.d-flex .btn, .card-footer.d-flex form { width: 100%; margin-bottom: .5rem; }
+    .card-footer.d-flex form { display: block !important; }
+    @media (min-width: 768px) {
+      .card-footer.d-flex { flex-direction: row !important; justify-content: flex-end !important; align-items: center !important; gap: .75rem; }
+      .card-footer.d-flex .btn, .card-footer.d-flex form { width: auto !important; margin-bottom: 0 !important; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+        <h3 class="card-title mb-0">
+          <i class="fas fa-tools mr-2"></i> DETALHES DA FERRAMENTA
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3 text-center mb-3">
+            <img 
+              src="{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.jpg') }}"
+              alt="Imagem"
+              class="rounded shadow border mb-3"
+              style="width:300px; height:200px; object-fit:cover;">
+            <h5 class="mt-2 mb-1">{{ tool.desc_tool }}</h5>
+            <span class="badge badge-pill
+              {% if tool.type_tool == 'Nova' %}badge-success
+              {% elseif tool.type_tool == 'Usada' %}badge-primary
+              {% elseif tool.type_tool == 'Restaurada' %}badge-warning
+              {% elseif tool.type_tool == 'Danificada' %}badge-danger
+              {% else %}badge-secondary{% endif %}">
+              {{ tool.type_tool }}
+            </span>
+            <div class="mt-2">
+              <span class="badge badge-info">{{ tool.cat_tool }}</span>
+            </div>
+          </div>
+          <div class="col-md-9">
+            <table class="table table-bordered table-striped mb-0">
+              <tr>
+                <th style="width:180px;">ID</th>
+                <td>{{ tool.id }}</td>
+              </tr>
+              <tr>
+                <th>Descrição</th>
+                <td>{{ tool.desc_tool }}</td>
+              </tr>
+              <tr>
+                <th>Características</th>
+                <td>{{ tool.caracteristica_tool|default('-')|nl2br }}</td>
+              </tr>
+              <tr>
+                <th>Categoria</th>
+                <td>{{ tool.cat_tool }}</td>
+              </tr>
+              <tr>
+                <th>Estado</th>
+                <td>
+                  <span class="badge badge-pill
+                    {% if tool.type_tool == 'Nova' %}badge-success
+                    {% elseif tool.type_tool == 'Usada' %}badge-primary
+                    {% elseif tool.type_tool == 'Restaurada' %}badge-warning
+                    {% elseif tool.type_tool == 'Danificada' %}badge-danger
+                    {% else %}badge-secondary{% endif %}">
+                    {{ tool.type_tool }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Data de Aquisição</th>
+                <td>{{ tool.data_aquisicao ? tool.data_aquisicao|date('d/m/Y') : '-' }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% include "Admin/Tools/_footer_actions.twig" with {
+        'show_save': false,
+        'show_cancel': false,
+        'show_delete': true,
+        'delete_url': '/admin/tools/delete/' ~ tool.id,
+        'csrf_token': csrf_token
+      } %}
+    </div>
+  </div>
+</section>
+{% endblock %}

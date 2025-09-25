@@ -1,0 +1,52 @@
+{% extends 'layout_admin.twig' %}
+
+{% block title %}{{ title|default('Usuários por Mês') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>{{ title }}</h1>
+  <p>Evolução de novos cadastros de usuários por mês.</p>
+  <div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+      <h3 class="card-title mb-0">
+        <i class="fas fa-chart-line mr-2"></i> Evolução mensal
+      </h3>
+    </div>
+    <div class="card-body">
+      <canvas id="usuariosPorMesChart" style="height:420px;width:100%;"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/adminlte/plugins/chart.js/Chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ctx = document.getElementById('usuariosPorMesChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ labels|json_encode|raw }},
+      datasets: [{
+        label: 'Usuários cadastrados',
+        data: {{ counts|json_encode|raw }},
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0,123,255,0.08)',
+        pointBackgroundColor: '#17a2b8',
+        tension: 0.22,
+        pointRadius: 5,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "layout_site.twig" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1><i class="fas fa-user-lock"></i> {{ title }}</h1>
+      </div>
+      <div class="col-sm-6">
+        {% include 'Partials/_breadcrumb.twig' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="d-flex align-items-center justify-content-center mb-5 mb-md-6 mb-lg-7">
+    <div class="container-fluid">
+    <div class="card shadow-sm border-0" style="max-width: 460px; margin:auto;">
+      
+      {# --- CARD-HEADER AZUL/PRIMARY --- #}
+      <div class="card-header bg-primary text-white d-flex align-items-center">
+                <h3 class="card-title mb-0"><i class="fas fa-sign-in-alt mr-2"></i>Login no Sistema</h3>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                    <div class="alert alert-danger text-center mb-4">{{ error }}</div>
+                {% endif %}
+                <form method="post" action="/login" autocomplete="off">
+                    <div class="form-group mb-3">
+                        <label for="email" class="font-weight-bold">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Seu e-mail" required autofocus>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="senha" class="font-weight-bold">Senha</label>
+                        <input type="password" class="form-control" id="senha" name="senha" placeholder="Sua senha" required>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <a href="/" class="text-secondary small">
+                            <i class="fas fa-arrow-left mr-1"></i>Voltar ao site
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-unlock mr-1"></i> Entrar
+                        </button>
+                    </div>
+                </form>
+                        <hr>
+        <div class="mt-3 text-muted small text-center">         
+          <i class="fas fa-info-circle mr-1"></i> Não possui uma conta? <a href="/register">Registre-se aqui</a>.
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'layout_admin.twig' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>{{ title }}</h1>
+  <canvas id="pieChart" style="max-width:480px;max-height:480px;margin:auto;display:block;"></canvas>
+</div>
+<script src="/assets/adminlte/plugins/chart.js/Chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: {{ cargoLabels|json_encode|raw }},
+      datasets: [{
+        data: {{ cargoCounts|json_encode|raw }},
+        backgroundColor: [
+          '#007bff', '#17a2b8', '#ffc107', '#343a40'
+        ],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

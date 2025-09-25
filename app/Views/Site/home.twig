@@ -1,0 +1,378 @@
+{% extends "layout_site.twig" %}
+{% import "Partials/macros.twig" as macros %}
+{% block title %}Bem-vindo ao Portal{% endblock %}
+
+{% block styles %}
+  <style>
+    .bg-gradient {
+      background: linear-gradient(90deg, #2468f2 0%, #4876e8 51%, #13c3c3 100%);
+      {# background: linear-gradient(90deg,rgb(3, 11, 27) 0%,rgb(20, 21, 24) 51%,rgb(11, 12, 12) 100%);#}
+      background-size: 200% 200%;
+      animation: gradientBG 5s ease-in-out infinite;
+    }
+    @keyframes gradientBG {
+      0% {background-position:0% 50%;}
+      50% {background-position:100% 50%;}
+      100% {background-position:0% 50%;}
+    }
+    .hero-animated {
+      box-shadow: 0 8px 36px #2651a91a;
+      position: relative;
+      overflow: hidden;
+     
+    }
+    .avatar-profile {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 4px solid #fff3;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 16px #0001;
+    }
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+    }
+    .card {
+      transition: transform .18s;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 6px 30px #3657b26a;
+    }
+    .section-divider {
+      height: 2px;
+      width: 60px;
+      background: #13c3c3;
+      opacity: 0.5;
+      margin: 2.7rem auto;
+      border-radius: 99px;
+    }
+    .cta-area {
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 767px) {
+      .hero-animated { padding: 1.2rem 0.7rem; }
+      .bg-gradient { padding: 1.2rem 0.8rem; }
+      .avatar-profile { width: 80px; height: 80px; }
+    }
+    
+  </style>
+{% endblock %}
+
+  {# --------------------------------------------------------------------
+     HERO PRINCIPAL: Banner, Avatar e Ação Rápida
+  -------------------------------------------------------------------- #}
+{% block hero %}
+
+  <div class="bg-gradient text-white p-5 mb-5 shadow text-center hero-animated">
+    <h1 class="display-5 fw-bold mb-2">
+      <i class="fas fa-cube me-2"></i> Portal Fullstack PHP
+    </h1>
+    <div class="mb-2 h6 fw-normal opacity-75">
+      Ubuntu • Apache • PHP • MySQL • MVC Design Pattern
+    </div>
+    
+    {% if user %}
+      <img src="{{ user.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}" alt="Avatar"
+        class="avatar-profile rounded-circle shadow-sm mx-auto d-block" loading="lazy">
+      <div class="mb-2 mt-2">
+        <h4 class="mb-1">{{ user.nome }}</h4>
+        <span class="me-2">{{ macros.badge_cargo(user.cargo) }}</span>
+        <span>{{ macros.badge_status(user.status) }}</span>
+      </div>
+      {% if user.cargo == 'Admin' %}
+        <p class="lead mb-2">
+          Bem-vindo ao painel administrativo. Gerencie usuários, permissões e todo o ecossistema da aplicação.
+        </p>
+        <a href="/admin/dashboard" class="btn btn-success shadow">
+          <i class="fas fa-tachometer-alt"></i> Dashboard Admin
+        </a>
+      {% else %}
+        <p class="lead mb-2">
+          Sua conta está ativa e você já pode explorar todas as funcionalidades do sistema.
+        </p>
+        <a href="/profile" class="btn btn-success shadow">
+          <i class="fas fa-user-cog"></i> Meu Perfil
+        </a>
+      {% endif %}
+    {% else %}
+      <p class="lead mb-3">
+        Sistema modular, responsivo e escalável em PHP moderno. Perfeito para quem busca qualidade profissional do deploy ao painel!
+      </p>
+      <div class="d-flex flex-column flex-md-row justify-content-center cta-area">
+        <a href="/register" class="btn btn-light shadow fw-bold">
+          <i class="fas fa-user-plus me-1"></i> Quero me cadastrar
+        </a>
+        <a href="/login" class="btn btn-outline-light shadow">
+          <i class="fas fa-unlock me-1"></i> Já tenho uma conta
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block content %}
+
+  <div class="section-divider"></div>
+
+  {# --------------------------------------------------------------------
+     FUNCIONALIDADES PRINCIPAIS
+  -------------------------------------------------------------------- #}
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-4 text-center">
+    <div class="col" data-aos="fade-up">
+      <div class="card h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <i class="feature-icon fas fa-project-diagram text-primary"></i>
+          <h5 class="feature-title mb-2">Estrutura MVC</h5>
+          <p class="card-text small">
+            Organização em camadas, roteamento limpo e modularidade garantida.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col" data-aos="fade-up" data-aos-delay="100">
+      <div class="card h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <i class="feature-icon fas fa-shield-alt text-primary"></i>
+          <h5 class="feature-title mb-2">Login Seguro</h5>
+          <p class="card-text small">
+            Painel protegido, autenticação robusta e segurança por padrão.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col" data-aos="fade-up" data-aos-delay="200">
+      <div class="card h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <i class="feature-icon fas fa-server text-primary"></i>
+          <h5 class="feature-title mb-2">Ambiente Real</h5>
+          <p class="card-text small">
+            Deploy real em Ubuntu Server, com logs, backups e ferramentas modernas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  {# --------------------------------------------------------------------
+     MAIS FUNCIONALIDADES
+  -------------------------------------------------------------------- #}
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-4 text-center">
+    <div class="col" data-aos="fade-up">
+      <div class="card h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <i class="feature-icon fas fa-palette text-primary"></i>
+          <h5 class="feature-title mb-2">Design Profissional</h5>
+          <p class="card-text small">
+            Layout moderno, responsivo e focado em experiência do usuário.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col" data-aos="fade-up" data-aos-delay="100">
+      <div class="card h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <i class="feature-icon fas fa-book text-primary"></i>
+          <h5 class="feature-title mb-2">Documentação Completa</h5>
+          <p class="card-text small">
+            Rotas públicas, exemplos comentados, integração com PlantUML e README.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col" data-aos="fade-up" data-aos-delay="200">
+      <div class="card h-100 border-0 rounded-4 shadow-sm">
+        <div class="card-body">
+          <i class="feature-icon fas fa-code text-primary"></i>
+          <h5 class="feature-title mb-2">Código Legível</h5>
+          <p class="card-text small">
+            Organização em pastas, PSR, comentários úteis e fácil manutenção.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  {# --------------------------------------------------------------------
+     DIFERENCIAIS TÉCNICOS
+  -------------------------------------------------------------------- #}
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-4 text-center">
+    <div class="col" data-aos="fade-up">
+      <div class="card h-100 border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+          <h5 class="feature-title mb-2">Arquitetura Modular</h5>
+          <p class="card-text small">
+            Rotas padronizadas, módulos independentes e expansão facilitada.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col" data-aos="fade-up" data-aos-delay="100">
+      <div class="card h-100 border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <i class="feature-icon fas fa-shield-alt text-primary mb-3"></i>
+          <h5 class="feature-title mb-2">Segurança Avançada</h5>
+          <p class="card-text small">
+            CSRF, gestão de sessão, permissões e controle por cargo.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col" data-aos="fade-up" data-aos-delay="200">
+      <div class="card h-100 border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <i class="feature-icon fas fa-users-cog text-primary mb-3"></i>
+          <h5 class="feature-title mb-2">Administração Completa</h5>
+          <p class="card-text small">
+            Painel para admins, ativação/banimento e estatísticas em tempo real.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- 🔸 FUNCIONALIDADES EM CARDS -->
+ <div class="row row-cols-1 row-cols-md-3 g-4 mb-4 text-center">
+        <div class="col" data-aos="fade-up">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                     <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+                     <h5 class="feature-title mb-2">Estrutura MVC</h5>
+                    <p class="card-text">
+                        Organização em camadas com separação clara de responsabilidades. Roteamento limpo e modularidade garantida.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col" data-aos="fade-up" data-aos-delay="100">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                     <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+                     <h5 class="feature-title mb-2">Login Seguro</h5>
+                    <p class="card-text">
+                        Painel protegido com sessão autenticada, reCAPTCHA e validações de entrada.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                     <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+                     <h5 class="feature-title mb-2">Ambiente Real</h5>
+                    <p class="card-text">
+                        Rodando direto de um servidor Ubuntu. Ferramentas e versões acessadas dinamicamente.
+                    </p>
+                </div>
+            </div>
+        </div>
+  </div>
+  <div class="section-divider"></div>
+    <!-- 🔸 MAIS FUNCIONALIDADES -->
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-4 text-center">
+        <div class="col" data-aos="fade-up">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+                     <h5 class="feature-title mb-2">Identidade Visual</h5>
+                    <p class="card-text">
+                        Layout elegante, responsivo, com uso criterioso de espaçamentos, cores e tipografia moderna.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col" data-aos="fade-up" data-aos-delay="100">
+           <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+                     <h5 class="feature-title mb-2">Documentação Integrada</h5>
+                    <p class="card-text">
+                        Toda estrutura explicada via rotas públicas. PlantUML, Mermaid, README e conceitos.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col" data-aos="fade-up" data-aos-delay="200">
+           <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                     <i class="feature-icon fas fa-layer-group text-primary mb-3"></i>
+                     <h5 class="feature-title mb-2">Código de Alta Legibilidade</h5>
+                    <p class="card-text">
+                        Comentários úteis, organização em pastas e aderência a padrões PSR.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+ {# Seção de Depoimentos (depois das funcionalidades) #}
+ <section class="testimonials py-5 text-center bg-light rounded-4 mb-4 shadow-sm">
+  <h3 class="fw-bold mb-4">O que dizem sobre o portal</h3>
+  <div class="row justify-content-center">
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm p-3">
+        <img src="/assets/adminlte/dist/img/user1-128x128.jpg" class="rounded-circle mx-auto mb-2" width="64" alt="Avatar">
+        <blockquote class="blockquote mb-2">
+          <p class="mb-2 fst-italic">"A estrutura modular me ajudou a evoluir como dev. Recomendo fortemente!"</p>
+        </blockquote>
+        <figcaption class="blockquote-footer mt-1">
+          Bruno Souza, <cite title="Empresa">Desenvolvedor PHP Sênior</cite>
+        </figcaption>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm p-3">
+        <img src="/assets/adminlte/dist/img/user3-128x128.jpg" class="rounded-circle mx-auto mb-2" width="64" alt="Avatar">
+        <blockquote class="blockquote mb-2">
+          <p class="mb-2 fst-italic">"Design limpo, painel rápido e suporte top! Parabéns à equipe."</p>
+        </blockquote>
+        <figcaption class="blockquote-footer mt-1">
+          Maria Oliveira, <cite title="Empresa">Consultora UX</cite>
+        </figcaption>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm p-3">
+        <img src="/assets/adminlte/dist/img/user4-128x128.jpg" class="rounded-circle mx-auto mb-2" width="64" alt="Avatar">
+        <blockquote class="blockquote mb-2">
+          <p class="mb-2 fst-italic">"Implementei para meus clientes e todos ficaram satisfeitos. Show!"</p>
+        </blockquote>
+        <figcaption class="blockquote-footer mt-1">
+          Ricardo Lima, <cite title="Empresa">Freelancer</cite>
+        </figcaption>
+      </div>
+    </div>
+  </div>
+  
+  <a href="/depoimentos" class="btn btn-link mt-3">Ver todos os depoimentos <i class="fas fa-arrow-right"></i></a>
+ </section>
+
+  <div class="section-divider"></div>
+
+  {# --------------------------------------------------------------------
+     CALL TO ACTION
+  -------------------------------------------------------------------- #}
+  <div class="d-flex flex-column flex-md-row justify-content-center cta-area">
+    <a href="/admin/dashboard" class="btn btn-outline-primary btn-lg fw-bold">
+      <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+    <a href="/docs" class="btn btn-outline-success btn-lg px-4 fw-bold">
+      <i class="fas fa-book me-2"></i> Documentação
+    </a>
+  </div>
+
+{% endblock %}

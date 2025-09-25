@@ -1,0 +1,334 @@
+{# 
+  index.twig
+  -----------------------------------------------------------------------------
+  Lista de Usuários (AdminLTE + DataTables)
+  Este template exibe todos os usuários cadastrados no sistema em uma tabela
+  interativa e exportável, com filtros automáticos por status/cargo via URL.
+  Bloco filho de layout_admin.twig.
+  -----------------------------------------------------------------------------
+  Autor: Seu Nome <email>
+  Data: 2024-06-14
+#}
+
+{% extends "layout_admin.twig" %}
+
+{% block title %}Usuários do Sistema{% endblock %}
+
+{# Estilos customizados específicos para a página de usuários #}
+{% block styles %}
+  {{ parent() }}
+  <style>
+    .dataTables_paginate .pagination li:not(.previous):not(.next):nth-child(n+7) {
+      display: none;
+    }
+    table.dataTable.dtr-inline.collapsed td.child,
+    table.dataTable.dtr-inline.collapsed td.child ul,
+    table.dataTable.dtr-inline.collapsed td.child li,
+    table.dataTable.dtr-inline.collapsed td.child span.dtr-data,
+    table.dataTable.dtr-inline.collapsed td.child span.dtr-title {
+      text-align: left !important;
+      justify-content: flex-start !important;
+      align-items: flex-start !important;
+    }
+    @media (min-width: 768px) {
+      table.dataTable thead th,
+      table.dataTable tbody td.text-center {
+        text-align: center !important;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  {# --------- HEADER (Título e Breadcrumb) --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1><i class="fas fa-users"></i> {{ title }}</h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# --------- TABELA DE USUÁRIOS (Card) --------- #}
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-outline shadow">
+            <div class="card-header">
+            {# 
+              <a href="/admin/users/create" class="btn btn-success font-weight-bold shadow-sm">
+                <i class="fas fa-user-plus"></i> Adicionar Usuário
+              </a>
+            #}
+              <div class="card-tools">
+                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
+                <a href="/admin/users/create" class="btn btn-tool" title="Novo usuário"><i class="fas fa-user-plus"></i></a>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar"><i class="fas fa-expand"></i></button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                     <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a href="/admin/users/create" class="dropdown-item"><i class="fas fa-user-plus"></i> Novo usuário</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Configurações</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item"><i class="fas fa-user-plus"></i> Exportar Tudo</a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar"><i class="fas fa-minus"></i></button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="table-responsive">
+                {# ---------------- TABELA PRINCIPAL ---------------- #}
+                <table id="usersTable" class="table table-bordered table-hover table-striped table-sm align-middle mb-0" style="width:100%">
+                  <thead class="thead-light">
+                    <tr>
+                      <th class="text-center">AVATAR</th>
+                      <th class="text-center">NOME</th>
+                      <th class="text-center">CPF</th>
+                      <th class="text-center">DATA NASCIMENTO</th>
+                      <th class="text-center">CONTATO</th>
+                      <th class="text-center">E-MAIL</th>
+                      <th class="text-center">CARGO</th>
+                      <th class="text-center">STATUS</th>
+                      <th class="text-center">DATA CADASTRO</th>
+                      <th class="text-center" style="width:140px;">AÇÕES</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for u in usuarios %}
+                      <tr>
+                        <td class="text-center">
+                          {% if u.avatar %}
+                            <img src="{{ u.avatar }}" class="rounded shadow border border-primary" style="width:138px; height:138px; object-fit:cover;">
+                          {% else %}
+                            <img src="/assets/adminlte/dist/img/avatar7.png" alt="Avatar" class="rounded shadow" style="width:138px; height:138px; object-fit:cover;">
+                          {% endif %}
+                        </td>
+                        <td><span class="font-weight-bold">{{ u.nome }}</span></td>                                 
+                        <td>{{ u.cpf|cpf_format }}</td>       
+                        <td class="text-center">{{ u.data_nascimento|date('d/m/Y') }}</td>
+                        <td>{{ u.cel }}</td>
+                        <td>{{ u.email }}</td>
+                        <td class="text-center">
+                          <span class="badge badge-pill
+                            {% if u.cargo == 'Admin' %}badge-danger
+                            {% elseif u.cargo == 'Editor' %}badge-warning
+                            {% elseif u.cargo == 'Moderador' %}badge-info
+                            {% else %}badge-secondary{% endif %}">
+                            {{ u.cargo }}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge badge-{{ u.status == 'Ativo' ? 'success' : (u.status == 'Banido' ? 'danger' : (u.status == 'Pendente' ? 'warning' : 'secondary')) }}">
+                            {{ u.status }}
+                          </span>
+                        </td>
+                        <td class="text-center">{{ u.data_cadastro|date('d/m/Y H:i') }}</td>
+                        <td class="text-center">
+                          <div class="btn-group btn-group-sm align-items-center" role="group" aria-label="Ações">
+                            <a href="/admin/users/show/{{ u.id }}" class="btn btn-info" data-toggle="tooltip" title="Visualizar">
+                              <i class="fas fa-eye fa-fw"></i>
+                            </a>
+                            <a href="/admin/users/edit/{{ u.id }}?return_to=list" class="btn btn-warning" data-toggle="tooltip" title="Editar">
+                              <i class="fas fa-edit fa-fw"></i>
+                            </a>
+                            <button type="submit" form="delUser{{ u.id }}" class="btn btn-danger" data-toggle="tooltip" title="Excluir" aria-label="Excluir">
+                              <i class="fas fa-trash-alt fa-fw"></i>
+                            </button>
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Mais ações">
+                                <i class="fas fa-cog fa-fw"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#"><i class="fas fa-key mr-2"></i> Redefinir Senha</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-ban mr-2"></i> Suspender</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-envelope mr-2"></i> Enviar Mensagem</a>
+                              </div>
+                            </div>
+                          </div>
+                          <form id="delUser{{ u.id }}" method="post" action="/admin/users/delete/{{ u.id }}" style="display:none" onsubmit="return confirm('Excluir usuário?');"></form>
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td colspan="10" class="text-center text-muted">Nenhum usuário cadastrado.</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <span class="text-muted">Total: <strong>{{ usuarios|length }}</strong> usuário(s)</span>
+                </div>
+                <div class="col-md-6 text-right">
+                  <a href="/admin/users/create" class="btn btn-success font-weight-bold shadow-sm">
+                    <i class="fas fa-user-plus"></i> Adicionar Usuário
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div> {# /card #}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{# --------- SCRIPTS: DataTables + exportação --------- #}
+{% block scripts %}
+  {{ parent() }}
+  <script>
+    $(document).ready(function() {
+      // Inicializa o DataTable só uma vez!
+      const table = $('#usersTable').DataTable({
+        responsive: true,
+        pagingType: "simple_numbers",
+        dom:
+          "<'row align-items-center mb-3'<'col-md-4 dt-buttons'B><'col-md-4 text-center'l><'col-md-4'f>>" +
+          "<'row'<'col-12'tr>>" +
+          "<'row mt-2'<'col-md-5'i><'col-md-7'p>>",
+        lengthMenu: [
+          [5, 10, 15, 20, 25, -1],
+          [5, 10, 15, 20, 25, "Todos"]
+        ],
+        pageLength: 5,
+        buttons: [
+          {
+            extend: 'copy',
+            text: '<i class="fas fa-copy"></i> Copiar',
+            className: 'btn btn-sm btn-secondary',
+            exportOptions: { columns: ':visible:not(:last-child)' }
+          },
+          {
+            extend: 'csv',
+            text: '<i class="fas fa-file-csv"></i> CSV',
+            className: 'btn btn-sm btn-info',
+            exportOptions: { columns: ':visible:not(:last-child)' }
+          },
+          {
+            extend: 'excel',
+            text: '<i class="fas fa-file-excel"></i> Excel',
+            className: 'btn btn-sm btn-success',
+            exportOptions: { columns: ':visible:not(:last-child)' }
+          },
+          {
+            extend: 'pdfHtml5',
+            text: '<i class="fas fa-file-pdf"></i> PDF',
+            className: 'btn btn-sm btn-danger',
+            exportOptions: { columns: ':visible:not(:last-child)' },
+            orientation: 'landscape',
+            pageSize: 'A4',
+            title: 'Relatório de Usuários',
+            customize: function (doc) {
+              const dataAtual = new Date().toLocaleDateString('pt-BR');
+              doc.defaultStyle.fontSize = 10;
+              doc.content[1].table.widths = ['auto', '*', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
+              doc.content.unshift({
+                text: 'Usuários do Sistema',
+                fontSize: 16,
+                alignment: 'center',
+                margin: [0, 0, 0, 12]
+              });
+              doc.footer = function(currentPage, pageCount) {
+                return {
+                  text: `Página ${currentPage} de ${pageCount}`,
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0]
+                };
+              };
+              doc.header = function() {
+                return {
+                  columns: [
+                    { text: 'Painel AdminLTE - Relatório', alignment: 'left', margin: [40, 20], fontSize: 10 },
+                    { text: dataAtual, alignment: 'right', margin: [0, 20, 40, 0], fontSize: 10 }
+                  ]
+                };
+              };
+              doc.content[1].layout = {
+                hLineWidth: function() { return 0.5; },
+                vLineWidth: function() { return 0.5; },
+                hLineColor: function() { return '#aaa'; },
+                vLineColor: function() { return '#aaa'; },
+                paddingLeft: function() { return 8; },
+                paddingRight: function() { return 8; }
+              };
+            }
+          },
+          {
+            extend: 'print',
+            text: '<i class="fas fa-print"></i> Imprimir',
+            className: 'btn btn-sm btn-warning',
+            exportOptions: { columns: ':visible:not(:last-child)' },
+            title: '',
+            customize: function (win) {
+              const dataAtual = new Date().toLocaleDateString('pt-BR');
+              $(win.document.body).prepend(`
+                <div style="text-align:center; margin-bottom: 20px;">
+                  <h2 style="margin-bottom: 0;">Relatório de Usuários</h2>
+                  <small>Data: ${dataAtual}</small>
+                </div>
+              `);
+              $(win.document.body).find('table')
+                .addClass('compact')
+                .css('font-size', '12px')
+                .css('border-collapse', 'collapse');
+            }
+          },
+          {
+            extend: 'colvis',
+            text: '<i class="fas fa-eye"></i> Colunas',
+            className: 'btn btn-sm btn-primary'
+          }
+        ],
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
+        },
+        columnDefs: [
+          { orderable: false, targets: [-1, 0] },
+          { className: 'text-center', targets: [0, 3, 4, 5, 6] }
+        ]
+      });
+
+      // Ajustes visuais e tooltips
+      $('.dataTables_length').addClass('justify-content-center d-flex');
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // Função para obter parâmetro de filtro da URL (status, cargo)
+      function getUrlParameter(sParam) {
+        let sPageURL = window.location.search.substring(1),
+          sURLVariables = sPageURL.split('&'),
+          sParameterName;
+        for (let i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split('=');
+          if (sParameterName[0] === sParam) {
+            return decodeURIComponent(sParameterName[1]);
+          }
+        }
+        return false;
+      }
+
+      // Aplica filtro automático no DataTable se existir ?status= ou ?cargo=
+      const status = getUrlParameter('status');
+      const cargo  = getUrlParameter('cargo');
+      if (status) {
+        table.column(7).search(status).draw(); // Coluna status
+      }
+      if (cargo) {
+        table.column(6).search(cargo).draw();  // Coluna cargo
+      }
+    });
+  </script>
+{% endblock %}

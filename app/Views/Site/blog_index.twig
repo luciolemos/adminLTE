@@ -1,0 +1,127 @@
+{% extends "layout_site.twig" %}
+{% block title %}Blog{% endblock %}
+
+{% block styles %}
+<style>
+  .blog-card {
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 8px 32px #2222;
+    transition: transform 0.13s, box-shadow 0.13s;
+    background: #fff;
+    border: none;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .blog-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 48px #2222;
+  }
+  .blog-post .post-image {
+  width: 100%;
+  height: auto;              /* Altura automática: mostra a imagem inteira! */
+  max-height: 360px;         /* Limite opcional: ajusta conforme seu gosto */
+  object-fit: contain;       /* NUNCA corta a imagem! Mostra tudo. */
+  object-position: center;
+  border-radius: 1.1rem;
+  box-shadow: 0 2px 18px #2651a929;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+  display: block;
+  background: #f6f8fc;      /* Fundo suave, para imagens PNG/transparentes */
+}
+  .blog-card .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .blog-card .badge {
+    font-size: 0.88rem;
+    border-radius: 0.7rem;
+    padding: .5em .9em;
+    margin-bottom: .5em;
+    background: linear-gradient(90deg, #4876e8, #13c3c3);
+    color: #fff;
+    font-weight: 600;
+  }
+  .blog-card .author-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-top: 1.2em;
+    font-size: 0.98em;
+    color: #6c757d;
+  }
+  .blog-card .author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 10px #0002;
+  }
+  .blog-title-link {
+    color: #2547b6;
+    text-decoration: none;
+    transition: color 0.13s;
+  }
+  .blog-title-link:hover {
+    color: #13c3c3;
+    text-decoration: underline;
+  }
+ @media (max-width: 767px) {
+  .blog-post .post-image {
+    max-height: 180px;       /* Diminui o limite no mobile, se quiser */
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="mb-4 fw-bold text-primary"><i class="fas fa-envelope"></i> {{ title }}</h1>
+      </div>
+      <div class="col-sm-6">
+        {% include 'Partials/_breadcrumb.twig' %}
+      </div>
+    </div>
+  </div>
+</section>
+<div class="row">
+  {% for post in posts %}
+    <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex">
+      <div class="card blog-card w-100 h-100">
+        {% if post.imagem %}
+          <img src="{{ post.imagem }}" class="card-img-top" alt="Capa do post">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <span class="badge">{{ post.categoria|capitalize }}</span>
+          <h5 class="card-title mb-2">
+            <a href="/blog/{{ post.slug }}" class="blog-title-link">{{ post.titulo }}</a>
+          </h5>
+          <div class="text-truncate mb-2" style="max-height: 3em; color: #555;">
+            {{ post.conteudo|striptags|slice(0, 140) ~ (post.conteudo|length > 140 ? '...' : '') }}
+          </div>
+          <div class="author-meta mt-auto">
+            {% if post.autor_avatar %}
+              <img src="{{ post.autor_avatar }}" class="author-avatar" alt="Autor">
+            {% endif %}
+            <span>
+              {{ post.autor_nome }}<br>
+              <small class="text-muted">{{ post.criado_em|date('d/m/Y H:i') }}</small>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-12">
+      <div class="alert alert-info text-center">Nenhum post publicado ainda.</div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

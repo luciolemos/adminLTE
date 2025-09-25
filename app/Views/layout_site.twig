@@ -1,0 +1,21 @@
+{# app/Views/layout_site.twig #}
+{% import "Partials/macros.twig" as macros %}
+
+{% extends "layout_base.twig" %}
+
+{% block title %}{{ title|default('Portal') }}{% endblock %}
+
+{% block body %}
+    {% include "Partials/Site/navbar.twig" %}        
+    
+    <div class="pt-navbar-fix">   
+        {# HERO ocupa 100% #} 
+        {% block hero %}{% endblock %}
+      <main class="container">
+        {% include "Partials/flash.twig" %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+   
+    {% include "Partials/Site/footer.twig" %}
+{% endblock %}

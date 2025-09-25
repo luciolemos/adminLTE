@@ -1,0 +1,14 @@
+{# app/Views/Partials/macros.twig #}
+{% macro badge_cargo(cargo) %}
+    <span class="badge badge-{{ cargo == 'Admin' ? 'danger' : (cargo == 'Editor' ? 'warning' : (cargo == 'Moderador' ? 'info' : 'secondary')) }}  ml-1" title="Perfil no Sistema"
+          style="font-size:0.83em; padding:4px 10px; border-radius:12px; display:inline-flex; align-items:center; line-height:1.3;">
+        {{ cargo|default('Usuário') }}
+    </span>
+{% endmacro %}
+
+{% macro badge_status(status) %}
+    <span class="badge badge-{{ status == 'Ativo' ? 'success' : (status == 'Banido' ? 'danger' : (status == 'Pendente' ? 'warning' : 'secondary')) }}" title="Status no Sistema" 
+    style="font-size:0.83em; padding:4px 10px; border-radius:12px; display:inline-flex; align-items:center; line-height:1.3;">
+        {{ status|default('') }}
+    </span>
+{% endmacro %}

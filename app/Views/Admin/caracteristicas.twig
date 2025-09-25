@@ -1,0 +1,25 @@
+{% extends 'layout_admin.twig' %}
+
+{% block title %}Página Genérica{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>{{ title|default('Características do projeto') }}</h1>
+  <p>Este conteúdo foi carregado dinamicamente com base no slug.</p>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3 class="card-title mb-0"><i class="fas fa-book mr-2"></i> Documentação do Sistema</h3>
+    </div>
+    <div class="card-body">
+        <p>Aqui você pode inserir informações confidenciais, instruções técnicas, manuais, etc. Apenas administradores têm acesso a esta página.</p>
+        <ul>
+            <li>Como usar relatórios</li>
+            <li>Gestão de permissões</li>
+            <li>Links úteis</li>
+            <!-- Adicione mais tópicos -->
+        </ul>
+    </div>
+</div>
+{% endblock %}

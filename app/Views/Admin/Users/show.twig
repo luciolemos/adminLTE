@@ -1,0 +1,145 @@
+{% extends "layout_admin.twig" %}
+{% import "Partials/macros.twig" as macros %}
+{% block title %}Visualizar{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  <style>
+    .card-footer.d-flex .btn, .card-footer.d-flex form { width: 100%; margin-bottom: .5rem; }
+    .card-footer.d-flex form { display: block !important; }
+    @media (min-width: 768px) {
+      .card-footer.d-flex { flex-direction: row !important; justify-content: flex-end !important; align-items: center !important; gap: .75rem; }
+      .card-footer.d-flex .btn, .card-footer.d-flex form { width: auto !important; margin-bottom: 0 !important; }
+    }
+    .form-label { font-weight: 600; }
+    .form-control[readonly], .form-control[disabled], .custom-select[disabled] {
+      background: #f9fafb; color: #444; border: 1px solid #eaeaea; font-weight: 500;
+    }
+    .avatar-show {
+      width: 280px; height: 280px; object-fit: cover; border: 3px solid #f3f3f3;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 767px) {
+      .avatar-show { width: 100px; height: 100px; }
+      .form-label, .form-control { font-size: 14px; }
+    }
+    .badge-status { font-size: 1em; vertical-align: middle; }
+    .personal-card .avatar-col { min-width: 170px; }
+    .custom-file-label, .custom-file-input { pointer-events: none !important; background: #f9fafb; }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {# --------- HEADER (Título e Breadcrumb) --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">          
+          <h1><i class="fas fa-user-check"></i> {{ title }}</h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-outline shadow">
+            <div class="card-header">
+              <div class="card-tools">
+                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
+                <a href="/admin/users/create" class="btn btn-tool" title="Novo usuário"><i class="fas fa-user-plus"></i></a>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar"><i class="fas fa-expand"></i></button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a href="/admin/users/create" class="dropdown-item"><i class="fas fa-user-plus"></i> Novo usuário</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Configurações</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item"><i class="fas fa-user-plus"></i> Exportar Tudo</a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar"><i class="fas fa-minus"></i></button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row justify-content-center mt-4">
+                <div class="col-12 col-md-10 col-lg-7">
+                  <div class="d-flex flex-column flex-md-row align-items-center mb-4">
+                    <img
+                      src="{{ usuario.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
+                      alt="Avatar"
+                      class="rounded-circle border shadow-sm mb-3 mb-md-0"
+                      style="width:130px; height:130px; object-fit:cover;">
+                      
+                    <div class="ml-md-4 text-center text-md-left">
+                      <h4 class="mb-1">{{ usuario.nome }}</h4>
+                      <div class="mb-2">
+                        {{ macros.badge_cargo(usuario.cargo) }}
+                        {{ macros.badge_status(usuario.status) }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-borderless mb-3">
+                      <tbody>
+                        <tr>
+                          <th class="text-right" style="width:120px;">Nome:</th>
+                          <td>{{ usuario.nome }}</td>
+                        </tr>
+                        <tr>
+                          <th class="text-right">E-mail:</th>
+                          <td>{{ usuario.email }}</td>
+                        </tr>
+                        <tr>
+                          <th class="text-right">Celular:</th>
+                          <td>{{ usuario.cel|cel_format }}</td>
+                        </tr>
+                        <tr>
+                          <th class="text-right">CPF:</th>
+                          <td>{{ usuario.cpf|cpf_format }}</td>
+                        </tr>
+                        <tr>
+                          <th class="text-right">Nascimento:</th>
+                          <td>{{ usuario.data_nascimento|date("d/m/Y") }}</td>
+                        </tr>
+                        <tr>
+                          <th class="text-right align-top">Endereço:</th>
+                          <td>
+                            {{ usuario.logradouro }}<br>
+                            {{ usuario.cidade }}{% if usuario.uf %} / {{ usuario.uf }}{% endif %}<br>
+                            {% if usuario.cep %}<small class="text-muted">CEP: {{ usuario.cep|cep_format }}</small>{% endif %}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  {% if flash_success %}
+                    <div class="alert alert-success mt-3">{{ flash_success }}</div>
+                  {% endif %}
+                  {% if flash_error %}
+                    <div class="alert alert-danger mt-3">{{ flash_error }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div>
+          {% include "Admin/Users/_footer_actions.twig" with {
+          'show_save': false,
+          'show_cancel': false,
+          'show_delete': false,
+          'show_edit': true
+          } %}             
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "layout_admin.twig" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% block styles %}
+<style>
+:root {
+  --grad-info: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+  --grad-success: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  --grad-warning: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+  --grad-danger: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+  --grad-secondary: linear-gradient(135deg, #485563 0%, #29323c 100%);
+  --grad-primary: linear-gradient(135deg, #396afc 0%, #2948ff 100%);
+  --grad-light: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
+}
+
+.dashboard-card {
+  border: none;
+  border-radius: 1.4rem;
+  font-family: 'Inter', Arial, sans-serif;
+  transition: transform 0.17s cubic-bezier(.4,2,.6,1), box-shadow 0.18s, filter 0.18s;
+  box-shadow: 0 2px 12px rgba(60, 60, 120, 0.10);
+  position: relative;
+  overflow: hidden;
+  min-height: 154px;
+  cursor: pointer;
+  background: var(--grad-info);
+  color: #fff;
+  filter: brightness(.98);
+}
+.dashboard-card.bg-gradient-info      { background: var(--grad-info); }
+.dashboard-card.bg-gradient-success   { background: var(--grad-success);}
+.dashboard-card.bg-gradient-warning   { background: var(--grad-warning); color:#423d00;}
+.dashboard-card.bg-gradient-danger    { background: var(--grad-danger);}
+.dashboard-card.bg-gradient-secondary { background: var(--grad-secondary);}
+.dashboard-card.bg-gradient-primary   { background: var(--grad-primary);}
+.dashboard-card.bg-gradient-light     { background: var(--grad-light); color: #222; }
+.dashboard-card .icon-bg {
+  position: absolute;
+  right: 1.2rem;
+  top: 1.1rem;
+  font-size: 3.7rem;
+  opacity: 0.15;
+  pointer-events: none;
+  line-height: 1;
+  filter: blur(1px);
+}
+.dashboard-card .display-4 {
+  font-size: 2.3rem;
+  font-weight: 800;
+  margin-bottom: 0.1rem;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(10,20,60,0.09);
+  letter-spacing: -1px;
+}
+.dashboard-card.bg-gradient-light .display-4 { color: #333; }
+.dashboard-card .card-title {
+  margin-bottom: 0.45rem;
+  font-size: 1.06rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.09);
+  color: #fff;
+  opacity:.96;
+}
+.dashboard-card.bg-gradient-warning .card-title { color: #423d00;}
+.dashboard-card.bg-gradient-light .card-title   { color: #2c3e50;}
+.dashboard-card .btn-see {
+  margin-top: 0.15rem;
+  font-size: .99rem;
+  color: #eaf6ff;
+  background: rgba(0,0,0,0.10);
+  border: none;
+  border-radius: 1rem;
+  transition: background 0.11s, color 0.09s;
+  padding: 2px 17px;
+  font-weight: 500;
+  box-shadow: none;
+}
+.dashboard-card .btn-see:hover {
+  background: rgba(255,255,255,0.16);
+  color: #fff;
+  filter: brightness(1.1);
+}
+.dashboard-card:hover {
+  transform: translateY(-7px) scale(1.028);
+  box-shadow: 0 10px 40px 0 rgba(44,128,224,0.14), 0 1.5px 8px rgba(30,40,60,.12);
+  z-index: 3;
+  filter: brightness(1.03) saturate(1.09);
+  animation: pop-card .22s;
+}
+@keyframes pop-card {
+  0%   { transform: scale(1);}
+  70%  { transform: scale(1.035);}
+  100% { transform: scale(1.028);}
+}
+@media (max-width: 575px) {
+  .dashboard-card { min-height: 110px; }
+  .dashboard-card .icon-bg { font-size: 1.7rem; top: 0.7rem; right: 0.7rem;}
+  .dashboard-card .display-4 { font-size: 1.3rem; }
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{#  <h4 class="text-muted mt-3 mb-4">Olá {{ user.nome|split(' ')[0]|capitalize }}!</span></h4>#}
+
+   {# --------- HEADER (Título e Breadcrumb) --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1><i class="fas fa-tachometer-alt"></i> {{ title }}</h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+<div class="row">
+
+    <!-- Card Total Usuários -->
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+        <a href="/admin/users" class="text-decoration-none">
+            <div class="card dashboard-card bg-gradient-info text-center h-100">
+                <span class="icon-bg"><i class="fas fa-users"></i></span>
+                <div class="card-body position-relative">
+                    <div class="card-title">Total Usuários</div>
+                    <div class="display-4">{{ total_usuarios }}</div>
+                    <div><span class="btn btn-see">Ver todos</span></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+
+
+    <!-- Cards por Status -->
+    {% set status_colors = {'Ativo':'success','Inativo':'secondary','Pendente':'warning','Banido':'danger'} %}
+    {% set status_icons = {'Ativo':'fa-user-check','Inativo':'fa-user-times','Pendente':'fa-user-clock','Banido':'fa-user-slash'} %}
+    {% for s in status_options %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+        <a href="/admin/users?status={{ s }}" class="text-decoration-none">
+            <div class="card dashboard-card bg-gradient-{{ status_colors[s]|default('info') }} text-center h-100">
+                <span class="icon-bg"><i class="fas {{ status_icons[s]|default('fa-user') }}"></i></span>
+                <div class="card-body position-relative">
+                    <div class="card-title">{{ s }}</div>
+                    <div class="display-4">{{ status_counts[s]|default(0) }}</div>
+                    <div><span class="btn btn-see">Ver {{ s|lower }}</span></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+
+    <!-- Cards por Cargo -->
+    {% set cargo_colors = {'Admin':'primary','Editor':'info','Moderador':'warning','Usuário':'light'} %}
+    {% set cargo_icons = {'Admin':'fa-user-shield','Editor':'fa-user-edit','Moderador':'fa-user-cog','Usuário':'fa-user'} %}
+    {% for c in cargo_options %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+        <a href="/admin/users?cargo={{ c }}" class="text-decoration-none">
+            <div class="card dashboard-card 
+                        {% if cargo_colors[c] == 'light' %}text-dark{% else %}text-white{% endif %}
+                        bg-gradient-{{ cargo_colors[c]|default('info') }} text-center h-100">
+                <span class="icon-bg"><i class="fas {{ cargo_icons[c]|default('fa-user') }}"></i></span>
+                <div class="card-body position-relative">
+                    <div class="card-title">{{ c }}</div>
+                    <div class="display-4">{{ cargo_counts[c]|default(0) }}</div>
+                    <div><span class="btn btn-see">Ver {{ c|lower }}</span></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

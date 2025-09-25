@@ -1,0 +1,9 @@
+       <div class="author-meta mt-auto">
+            {% if post.autor_avatar %}
+              <img src="{{ post.autor_avatar }}" alt="Seu Nome" class="cta-avatar mb-3 mb-md-0 me-md-4 shadow-sm" loading="lazy" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" loading="lazy">
+            {% endif %}
+            <span> 
+              {{ post.autor_nome }}<br>
+              <small class="text-muted">{{ post.criado_em|date('d/m/Y H:i') }}</small>
+            </span>
+          </div>

@@ -1,0 +1,76 @@
+{% extends 'admin_base.twig' %}
+
+{% block title %}Página em Branco{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>Página em Branco</h1>
+  <p class="mb-4">Esta é uma view de teste totalmente integrada ao layout AdminLTE.</p>
+
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <strong>🚀 Passo a passo para adicionar uma nova página no admin</strong>
+    </div>
+    <div class="card-body">
+      <ol>
+        <li>
+          <strong>Menu:</strong> Criamos um novo item no menu lateral  
+          <br><code>Views/Partials/admin_sidebar.twig</code>
+          <br>Adicionamos:
+          <pre><code>
+&lt;li class="nav-item"&gt;
+  &lt;a href="/admin/blank" class="nav-link"&gt;
+    &lt;i class="nav-icon fas fa-file"&gt;&lt;/i&gt;
+    &lt;p&gt;Página em branco&lt;/p&gt;
+  &lt;/a&gt;
+&lt;/li&gt;
+          </code></pre>
+        </li>
+
+        <li>
+          <strong>Rota:</strong> Definimos uma nova rota em  
+          <code>routes/admin.php</code>:
+          <pre><code>$router->get('/admin/blank', 'Admin/Blank@index');</code></pre>
+        </li>
+
+        <li>
+          <strong>Controller:</strong> Criamos  
+          <code>app/Controllers/Admin/BlankController.php</code>:
+          <pre><code>
+namespace App\Controllers\Admin;
+
+use App\Core\Controller;
+use App\Middlewares\AuthMiddleware;
+
+class BlankController extends Controller
+{
+    public function index()
+    {
+        AuthMiddleware::handle();
+        return $this->render('Admin/blank_view', []);
+    }
+}
+          </code></pre>
+        </li>
+
+        <li>
+          <strong>View:</strong> Criamos o arquivo  
+          <code>Views/Admin/blank_view.twig</code> (este aqui).
+          <br>Esse arquivo estende <code>admin_base.twig</code>, garantindo identidade visual do AdminLTE.
+        </li>
+
+        <li>
+          <strong>Router (core):</strong> Atualizamos  
+          <code>Router.php</code> para permitir parsing automático:
+          <ul>
+            <li>Agora aceita formato <code>'Admin/Blank@index'</code></li>
+            <li>Interpreta como <code>App\Controllers\Admin\BlankController</code> + método <code>index</code></li>
+          </ul>
+        </li>
+      </ol>
+
+      <p class="mt-4">✅ Tudo isso garante que a página está plenamente integrada ao layout administrativo.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

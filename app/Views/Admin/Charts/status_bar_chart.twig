@@ -1,0 +1,87 @@
+{% extends 'layout_admin.twig' %}
+
+{% block title %}{{ title|default('Gráfico') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>{{ title }}</h1>
+  <p>Visualize abaixo a distribuição dos usuários por status.</p>
+</div>
+
+<div class="card shadow mb-4">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h3 class="card-title mb-0"><i class="fas fa-chart-bar mr-2"></i> Usuários por Status</h3>
+  </div>
+  <div class="card-body">
+    <canvas id="barChart" style="height:400px;width:100%;"></canvas>
+  </div>
+</div>
+
+<script src="/assets/adminlte/plugins/chart.js/Chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ctx = document.getElementById('barChart').getContext('2d');
+
+  const gradientGreen = ctx.createLinearGradient(0, 0, 0, 400);
+  gradientGreen.addColorStop(0, 'rgba(40, 167, 69, 0.9)');
+  gradientGreen.addColorStop(1, 'rgba(40, 167, 69, 0.6)');
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ statusLabels|json_encode|raw }},
+      datasets: [{
+        label: 'Usuários',
+        data: {{ statusCounts|json_encode|raw }},
+        backgroundColor: [
+          gradientGreen,
+          'rgba(108,117,125, 0.8)',
+          'rgba(255,193,7, 0.8)',
+          'rgba(220,53,69, 0.8)'
+        ],
+        borderRadius: 8,
+        maxBarThickness: 260
+
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 1000,
+        easing: 'easeOutBounce'
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: '#343a40',
+          titleColor: '#fff',
+          bodyColor: '#f8f9fa',
+          callbacks: {
+            label: function(context) {
+              return ` ${context.dataset.label}: ${context.formattedValue}`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#343a40',
+            precision: 0
+          }
+        },
+        x: {
+          ticks: {
+            color: '#343a40'
+          }
+        }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

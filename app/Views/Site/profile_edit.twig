@@ -1,0 +1,199 @@
+{% extends "layout_site.twig" %}
+{% import "Partials/macros.twig" as macros %}
+{% block title %}Editar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-12 col-md-10 col-lg-7">
+    <div class="card shadow-sm border-0">
+          {# --- CARD-HEADER AZUL/PRIMARY --- #}
+      <div class="card-header bg-primary text-white d-flex align-items-center">
+        <h3 class="card-title mb-0">
+          <i class="fas fa-user-plus"></i> Atualização de cadastro
+        </h3>
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data" autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="d-flex flex-column flex-md-row align-items-center mb-4 text-center text-md-left">
+            <img id="avatarPreview"
+                 src="{{ user.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
+                 alt="Avatar" class="rounded-circle border shadow-sm mx-auto mx-md-0"
+                 style="width:130px; height:130px; object-fit:cover;">
+            <div class="ml-md-4 mt-3 mt-md-0 w-100">
+              <h4 class="mb-1">{{ user.nome }}</h4>
+              <div class="mb-2">
+                {{ macros.badge_cargo(user.cargo) }}
+                {{ macros.badge_status(user.status) }}
+              </div>
+               {#  
+              <div class="custom-file" style="max-width:340px;">
+                <input type="file" name="avatar" class="custom-file-input" id="avatarInput" accept="image/*" onchange="showAvatarPreview(event)">
+                <label class="custom-file-label" for="avatarInput">Selecionar imagem...</label>
+                {% if errors.avatar %}
+                  <small class="text-danger d-block">{{ errors.avatar }}</small>
+                {% endif %}
+              </div>
+              <small class="form-text text-muted">Formatos: JPG, PNG, GIF. Máx: 2MB.</small> #}
+            </div>
+          </div>
+
+          {% if errors %}
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                {% for field, msg in errors %}
+                  <li><strong>{{ field|replace({'_':' '})|capitalize }}:</strong> {{ msg }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          {% if flash_success %}
+            <div class="alert alert-success">{{ flash_success }}</div>
+          {% endif %}
+          {% if flash_error %}
+            <div class="alert alert-danger">{{ flash_error }}</div>
+          {% endif %}
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Nome</label>
+              <input type="text" class="form-control" name="nome" required maxlength="80" value="{{ user.nome }}">
+            </div>
+            <div class="form-group col-md-6">
+              <label>E-mail</label>
+              <input type="email" class="form-control" name="email" required maxlength="120" value="{{ user.email }}">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>CPF</label>
+              <input type="text" class="form-control" name="cpf" maxlength="14" required 
+                     value="{{ user.cpf }}" placeholder="000.000.000-00">
+            </div>
+            <div class="form-group col-md-4">
+              <label>Celular</label>
+              <input type="text" class="form-control" name="cel" maxlength="20" required
+                     value="{{ user.cel }}" placeholder="(84) 9-9999-9999">
+            </div>
+            <div class="form-group col-md-4">
+              <label>Nascimento</label>
+              <input type="date" class="form-control" name="data_nascimento"
+                     value="{{ user.data_nascimento }}">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-7">
+              <label>Logradouro</label>
+              <input type="text" class="form-control" name="logradouro"
+                     value="{{ user.logradouro }}" maxlength="120" placeholder="Rua, número...">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Cidade</label>
+              <input type="text" class="form-control" name="cidade"
+                     value="{{ user.cidade }}" maxlength="60" placeholder="Cidade">
+            </div>
+            <div class="form-group col-md-2">
+              <label>UF</label>
+              <select name="uf" class="form-control">
+                <option value="">Selecione</option>
+                {% set ufs = [
+                  'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
+                  'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'
+                ] %}
+                {% for uf_opt in ufs %}
+                  <option value="{{ uf_opt }}" {% if user.uf == uf_opt %}selected{% endif %}>{{ uf_opt }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>CEP</label>
+              <input type="text" class="form-control" name="cep" maxlength="9"
+                     value="{{ user.cep }}" placeholder="99999-999">
+            </div>
+            <div class="form-group col-md-8">
+                <label for="avatarInput" class="font-weight-bold">Foto do usuário</label>
+  <div class="custom-file">
+    <input type="file" name="avatar" class="custom-file-input" id="avatarInput" accept="image/*" onchange="showAvatarPreview(event)">
+    <label class="custom-file-label" for="avatarInput">Selecionar imagem...</label>
+  </div>
+  {% if errors.avatar %}
+    <small class="text-danger d-block">{{ errors.avatar }}</small>
+  {% endif %}
+  <small class="form-text text-muted">Formatos: JPG, PNG, GIF. Máx: 2MB.</small>
+            </div>
+          </div>       
+
+
+          <div class="d-flex flex-column flex-md-row" style="gap:.75rem;">
+             <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Salvar</button>
+             <a href="/profile" class="btn btn-alert alert-warning"><i class="fas fa-times"></i> Cancelar</a>
+          </div>   
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function showAvatarPreview(event) {
+    const [file] = event.target.files;
+    if (file) {
+      document.getElementById('avatarPreview').src = URL.createObjectURL(file);
+      event.target.nextElementSibling.textContent = file.name;
+    }
+  }
+  window.showAvatarPreview = showAvatarPreview;
+
+  document.querySelectorAll('.custom-file-input').forEach(function(input) {
+    input.addEventListener('change', function(e){
+      let fileName = e.target.files[0]?.name || 'Selecionar imagem...';
+      e.target.nextElementSibling.textContent = fileName;
+    });
+  });
+
+  // Máscara Celular: (84) 99999-9999
+  var cel = document.querySelector('input[name="cel"]');
+  if (cel) {
+    cel.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 2) {
+        v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+      }
+      if (v.length > 10) {
+        v = v.slice(0, 10) + '-' + v.slice(10, 15);
+      } else if (v.length > 6) {
+        v = v.slice(0, 9) + '-' + v.slice(9, 13);
+      }
+      e.target.value = v;
+    });
+  }
+
+  // Máscara CPF
+  var cpf = document.querySelector('input[name="cpf"]');
+  if (cpf) {
+    cpf.addEventListener('input', function(e){
+      e.target.value = e.target.value
+        .replace(/\D/g,'')
+        .replace(/(\d{3})(\d)/,'$1.$2')
+        .replace(/(\d{3})(\d)/,'$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    });
+  }
+  // Máscara CEP: 99999-999
+  var cep = document.querySelector('input[name="cep"]');
+  if (cep) {
+    cep.addEventListener('input', function(e){
+      e.target.value = e.target.value
+        .replace(/\D/g,'')
+        .replace(/^(\d{5})(\d)/, '$1-$2')
+        .slice(0,9);
+    });
+  }
+});
+</script>
+{% endblock %}

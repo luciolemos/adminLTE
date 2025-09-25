@@ -1,0 +1,207 @@
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+{% if errors %}
+  <div class="alert alert-danger shadow-sm mb-3">
+    <ul class="mb-0">
+      {% for field, msg in errors %}
+        <li><strong>{{ field|replace({'_': ' '})|capitalize }}:</strong> {{ msg }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+
+
+  <div class="col-12 mb-4">
+      <div class="row align-items-center">
+        <div class="col-12 col-md-3 text-center mb-4 mb-md-0">
+          <img id="avatarPreview"
+               src="{{ usuario.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
+               class="rounded-circle shadow-sm border"
+               style="width: 120px; height: 120px; object-fit: cover;">
+          <div class="custom-file mt-3">
+            <input type="file" name="avatar" accept="image/*"
+                   class="custom-file-input" id="avatarInput"
+                   onchange="showAvatarPreview(event)">
+            <label class="custom-file-label text-truncate" for="avatarInput">Selecionar imagem...</label>
+          </div>
+          <small class="form-text text-muted mt-2">Formatos: JPG, PNG, GIF. Máx: 2MB.</small>
+        </div>
+        <div class="col-12 col-md-9">
+          <div class="form-row">
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">Nome <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="nome" required maxlength="80"
+                     value="{{ usuario.nome|default('') }}">
+            </div>
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">E-mail <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" name="email" required maxlength="120"
+                     value="{{ usuario.email|default('') }}">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">Cargo <span class="text-danger">*</span></label>
+              <select name="cargo" class="form-control" required>
+                {% set cargos = ['Admin', 'Editor', 'Moderador', 'Usuário'] %}
+                {% for c in cargos %}
+                  <option value="{{ c }}" {% if usuario.cargo == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">Status <span class="text-danger">*</span></label>
+              <select name="status" class="form-control" required>
+                {% set status_options = ['Ativo', 'Inativo', 'Pendente', 'Banido'] %}
+                {% for s in status_options %}
+                  <option value="{{ s }}" {% if usuario.status == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">CPF <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="cpf" maxlength="14" required
+                     value="{{ usuario.cpf|cpf_format }}" placeholder="000.000.000-00">
+            </div>
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">Data de Nascimento <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" name="data_nascimento" required
+                     value="{{ usuario.data_nascimento|default('') }}">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">Celular <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="cel"
+                     maxlength="20" required
+                     value="{{ usuario.cel|cel_format }}"
+                     placeholder="(84) 99999-9999"
+                     pattern="\(\d{2}\)\s?\d{4,5}-\d{4}">
+              <small class="form-text text-muted">Ex: (84) 99999-9999</small>
+            </div>
+            <div class="form-group col-md-6 mb-3">
+              <label class="font-weight-bold">
+                Senha
+                {% if not usuario.id %}
+                  <span class="text-danger">(obrigatória na criação)</span>
+                {% else %}
+                  <span class="text-muted">(deixe em branco para não alterar)</span>
+                {% endif %}
+              </label>
+              <input type="password" class="form-control" name="senha" autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+
+  <div class="form-row">
+        <div class="form-group col-md-6 mb-3">
+          <label class="form-label font-weight-bold">Logradouro</label>
+          <input type="text" class="form-control" name="logradouro"
+                 maxlength="120"
+                 value="{{ usuario.logradouro|default('') }}"
+                 placeholder="Avenida Paulista, Rua das Flores...">
+          <small class="form-text text-muted">Ex: Avenida Paulista, Rua das Flores...</small>
+        </div>
+        <div class="form-group col-md-3 mb-3">
+          <label class="form-label font-weight-bold">Cidade</label>
+          <input type="text" class="form-control" name="cidade"
+                 maxlength="80"
+                 value="{{ usuario.cidade|default('') }}">
+        </div>
+        <div class="form-group col-md-1 mb-3">
+          <label class="form-label font-weight-bold">UF</label>
+          <select name="uf" class="form-control">
+            <option value="">Selecione</option>
+            {% set ufs = [
+              'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
+              'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'
+            ] %}
+            {% for uf_opt in ufs %}
+              <option value="{{ uf_opt }}" {% if usuario.uf == uf_opt %}selected{% endif %}>{{ uf_opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group col-md-2 mb-3">
+          <label class="form-label font-weight-bold">CEP</label>
+          <input type="text" class="form-control" name="cep"
+                 maxlength="9"
+                 value="{{ usuario.cep|cep_format }}"
+                 placeholder="99999-999"
+                 pattern="\d{5}-\d{3}">
+        </div>
+      </div>
+  </div>
+
+
+
+{# Scripts iguais aos anteriores... #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function showAvatarPreview(event) {
+    const [file] = event.target.files;
+    if (file) {
+      document.getElementById('avatarPreview').src = URL.createObjectURL(file);
+      event.target.nextElementSibling.textContent = file.name;
+    }
+  }
+  window.showAvatarPreview = showAvatarPreview;
+
+  document.querySelectorAll('.custom-file-input').forEach(function(input) {
+    input.addEventListener('change', function(e){
+      let fileName = e.target.files[0]?.name || 'Selecionar imagem...';
+      e.target.nextElementSibling.textContent = fileName;
+    });
+  });
+
+  // Máscara Celular: (84) 99999-9999
+var cel = document.querySelector('input[name="cel"]');
+if (cel) {
+  cel.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 2) {
+      v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+    }
+    if (v.length > 10) {
+      v = v.slice(0, 10) + '-' + v.slice(10, 15);
+    } else if (v.length > 6) {
+      v = v.slice(0, 9) + '-' + v.slice(9, 13);
+    }
+    e.target.value = v;
+  });
+}
+
+
+
+
+
+
+  // Máscara CPF
+  var cpf = document.querySelector('input[name="cpf"]');
+  if (cpf) {
+    cpf.addEventListener('input', function(e){
+      e.target.value = e.target.value
+        .replace(/\D/g,'')
+        .replace(/(\d{3})(\d)/,'$1.$2')
+        .replace(/(\d{3})(\d)/,'$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    });
+  }
+
+  // Máscara CEP: 99999-999
+  var cep = document.querySelector('input[name="cep"]');
+  if (cep) {
+    cep.addEventListener('input', function(e){
+      e.target.value = e.target.value
+        .replace(/\D/g,'')
+        .replace(/^(\d{5})(\d)/, '$1-$2')
+        .slice(0,9);
+    });
+  }
+});
+</script>

@@ -1,0 +1,73 @@
+{% extends "layout_admin.twig" %}
+{% block title %}Editar{% endblock %}
+{% block styles %}
+  {{ parent() }}
+  <style>
+    .card-footer.d-flex .btn, .card-footer.d-flex form { width: 100%; margin-bottom: .5rem; }
+    .card-footer.d-flex form { display: block !important; }
+    @media (min-width: 768px) {
+      .card-footer.d-flex { flex-direction: row !important; justify-content: flex-end !important; align-items: center !important; gap: .75rem; }
+      .card-footer.d-flex .btn, .card-footer.d-flex form { width: auto !important; margin-bottom: 0 !important; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {# --------- HEADER (Título e Breadcrumb) --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1><i class="fas fa-user-edit"></i> {{ title }}</h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-outline shadow">
+            <div class="card-header">
+              <div class="card-tools">
+                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
+                <a href="/admin/users/create" class="btn btn-tool" title="Novo usuário"><i class="fas fa-user-plus"></i></a>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar"><i class="fas fa-expand"></i></button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a href="/admin/users/create" class="dropdown-item"><i class="fas fa-user-plus"></i> Novo usuário</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Configurações</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item"><i class="fas fa-user-plus"></i> Exportar Tudo</a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar"><i class="fas fa-minus"></i></button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <form method="POST" action="?return_to={{ return_to|default('show') }}" enctype="multipart/form-data" class="needs-validation" novalidate autocomplete="off">
+                <div class="pb-2">
+                  {% include "Admin/Users/_form.twig" %}
+                </div>
+                {% include "Admin/Users/_footer_actions.twig" with {
+                  'show_save': true,
+                  'show_cancel': true,
+                  'show_delete': false
+                } %}
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

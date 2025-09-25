@@ -1,0 +1,284 @@
+{% extends "layout_admin.twig" %}
+
+{% block title %}Tabela Avançada{% endblock %}
+
+{% block content %}
+
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Tabela Avançada</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Tabela Avançada</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-primary card-outline">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-table mr-2"></i>
+                Usuários do Sistema
+              </h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                  <i class="fas fa-expand"></i>
+                </button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-wrench"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a href="#" class="dropdown-item">Adicionar Usuário</a>
+                    <a href="#" class="dropdown-item">Configurações</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">Exportar Tudo</a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <table id="advancedTable" class="table table-bordered table-striped table-hover" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Cargo</th>
+                    <th>Status</th>
+                    <th>Cadastro</th>
+                    <th>Último Login</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in 1..50 %}
+                    <tr>
+                      <td>{{ i }}</td>
+                      <td>
+                        <img src="https://i.pravatar.cc/150?img={{ i }}" class="user-avatar" alt="Avatar">
+                        Usuário {{ i }}
+                      </td>
+                      <td>usuario{{ i }}@exemplo.com</td>
+                      <td>
+                        {% set roles = ['Admin', 'Editor', 'Moderador', 'Usuário'] %}
+                        <span class="badge badge-{{ 
+                          roles[i % 4] == 'Admin' ? 'danger' : 
+                          (roles[i % 4] == 'Editor' ? 'warning' : 
+                          (roles[i % 4] == 'Moderador' ? 'info' : 'secondary')) 
+                        }}">
+                          {{ roles[i % 4] }}
+                        </span>
+                      </td>
+                      <td>
+                        {% set statuses = ['Ativo', 'Inativo', 'Pendente', 'Banido'] %}
+                        <span class="badge-status badge-{{ 
+                          statuses[i % 4] == 'Ativo' ? 'success' : 
+                          (statuses[i % 4] == 'Inativo' ? 'secondary' : 
+                          (statuses[i % 4] == 'Pendente' ? 'warning' : 'danger')) 
+                        }}">
+                          {{ statuses[i % 4] }}
+                        </span>
+                      </td>
+                      <td>{{ "now"|date_modify("-#{i} days")|date('d/m/Y') }}</td>
+                      <td>{{ "now"|date_modify("-#{i % 24} hours")|date('d/m/Y H:i') }}</td>
+                      <td>
+                        <div class="btn-group btn-group-xs">
+                          <button class="btn btn-info" title="Visualizar">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="btn btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="btn btn-danger" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                          <div class="btn-group btn-group-xs">
+                            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                              <i class="fas fa-cog"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="#"><i class="fas fa-key mr-2"></i> Redefinir Senha</a>
+                              <a class="dropdown-item" href="#"><i class="fas fa-ban mr-2"></i> Suspender</a>
+                              <a class="dropdown-item" href="#"><i class="fas fa-envelope mr-2"></i> Enviar Mensagem</a>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Cargo</th>
+                    <th>Status</th>
+                    <th>Cadastro</th>
+                    <th>Último Login</th>
+                    <th>Ações</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-success">
+                      <i class="fas fa-plus"></i> Novo Usuário
+                    </button>
+                    <button type="button" class="btn btn-default">
+                      <i class="fas fa-sync-alt"></i> Atualizar
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6 text-right">
+                  <small class="text-muted">
+                    Mostrando <span id="showing">1-10</span> de <span id="total">50</span> registros
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block scripts %}
+{{ parent() }}
+<script>
+$(document).ready(function() {
+  const table = $('#advancedTable').DataTable({
+    responsive: true,
+    dom: 
+      "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+      "<'row'<'col-sm-12'tr>>" +
+      "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+    buttons: [
+      {
+        extend: 'copy',
+        text: '<i class="fas fa-copy"></i> Copiar',
+        className: 'btn btn-sm btn-secondary',
+        exportOptions: {
+          columns: ':visible:not(:last-child)'
+        }
+      },
+      {
+        extend: 'csv',
+        text: '<i class="fas fa-file-csv"></i> CSV',
+        className: 'btn btn-sm btn-info',
+        exportOptions: {
+          columns: ':visible:not(:last-child)'
+        }
+      },
+      {
+        extend: 'excel',
+        text: '<i class="fas fa-file-excel"></i> Excel',
+        className: 'btn btn-sm btn-success',
+        exportOptions: {
+          columns: ':visible:not(:last-child)'
+        }
+      },
+      {
+        extend: 'pdf',
+        text: '<i class="fas fa-file-pdf"></i> PDF',
+        className: 'btn btn-sm btn-danger',
+        exportOptions: {
+          columns: ':visible:not(:last-child)'
+        }
+      },
+      {
+        extend: 'print',
+        text: '<i class="fas fa-print"></i> Imprimir',
+        className: 'btn btn-sm btn-warning',
+        exportOptions: {
+          columns: ':visible:not(:last-child)'
+        }
+      },
+      {
+        extend: 'colvis',
+        text: '<i class="fas fa-eye"></i> Colunas',
+        className: 'btn btn-sm btn-primary'
+      }
+    ],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
+    },
+    columnDefs: [
+      {
+        targets: -1,
+        orderable: false,
+        searchable: false,
+        className: 'text-center'
+      },
+      {
+        targets: [0],
+        className: 'text-center',
+        width: '5%'
+      },
+      {
+        targets: [3, 4],
+        className: 'text-center'
+      }
+    ],
+    initComplete: function() {
+      // Atualiza os contadores
+      updateCounters();
+      
+      // Atualiza a cada mudança de página/pesquisa
+      this.api().on('draw.dt', function() {
+        updateCounters();
+      });
+    }
+  });
+
+  function updateCounters() {
+    const info = table.page.info();
+    $('#showing').text(
+      info.recordsDisplay === 0 ? 0 : info.start + 1 + '-' + (info.end)
+    );
+    $('#total').text(info.recordsDisplay);
+  }
+
+  // Exemplo de ação para os botões
+  $('#advancedTable').on('click', '.btn-danger', function() {
+    const tr = $(this).closest('tr');
+    const id = table.row(tr).data()[0];
+    
+    if (confirm(`Deseja realmente excluir o usuário ID ${id}?`)) {
+      // Simular requisição AJAX
+      setTimeout(() => {
+        table.row(tr).remove().draw();
+        toastr.success(`Usuário ID ${id} excluído com sucesso!`);
+      }, 500);
+    }
+  });
+  
+  // Inicializa tooltips
+  $('[title]').tooltip({
+    placement: 'top',
+    trigger: 'hover'
+  });
+});
+</script>
+{% endblock %}

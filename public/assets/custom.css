@@ -1,0 +1,174 @@
+body {
+  background: #f8f9fa;
+}
+
+/* Navbar customizada sobre AdminLTE/Bootstrap 4.6 */
+.main-header,
+.main-header .navbar,
+.navbar-dark {
+  background: #23272b !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  z-index: 1030;
+}
+.main-header .navbar-brand,
+.main-header .navbar-nav .nav-link,
+.navbar-dark .navbar-brand,
+.navbar-dark .navbar-nav .nav-link {
+  color: #fff !important;
+}
+
+.main-header .navbar-nav .nav-link:hover,
+.main-header .navbar-nav .nav-link:focus,
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus {
+  color: #176ef0 !important;
+}
+
+.main-header .navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+/* Removido o override global de .container para não quebrar layout AdminLTE */
+.container-hero {
+  max-width: 90%;
+}
+
+/* Nav custom */
+.main-header .navbar-nav .nav-link {
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Botões especiais no menu */
+.nav-register,
+.nav-admin {
+  font-weight: 700;
+  border-radius: 30px;
+  padding: .3rem 1.2rem;
+  margin-left: 0.6rem;
+  color: #fff !important;
+  transition: background 0.2s;
+  display: inline-block;
+}
+.nav-register { background: #007bff; }
+.nav-register:hover { background: #0056b3; }
+.nav-admin { background: #28a745; }
+.nav-admin:hover { background: #19692c; }
+
+/* Avatar no nav */
+.avatar-nav {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+/* Logout button/link */
+.logout-link {
+  color: #dc3545 !important;
+  font-weight: 600;
+  margin-left: 10px;
+}
+.logout-link:hover {
+  text-decoration: underline;
+  color: #a71d2a !important;
+}
+.btn-logout-desktop { display: inline-block; }
+.btn-logout-mobile { display: none; }
+
+/* Ativo no nav */
+.main-header .navbar-nav .nav-link.active,
+.navbar-dark .navbar-nav .nav-link.active {
+  color: #fff !important;
+  background: #007bff !important;
+  border-radius: .25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding-left: 1rem;
+}
+
+/* Responsivo no nav */
+@media (max-width: 991.98px) {
+  .main-header .navbar-nav { align-items: flex-start !important; }
+  .main-header .navbar-nav .nav-item { width: 100%; }
+  .main-header .navbar-nav .nav-link,
+  .main-header .navbar-nav .btn,
+  .main-header .navbar-nav .logout-link {
+    justify-content: flex-start;
+    text-align: left;
+    width: 100%;
+    padding-left: 2rem;
+  }
+  .btn-logout-desktop { display: none; }
+  .btn-logout-mobile {
+    display: inline-block;
+    width: 100%;
+    margin: 0.6rem 0 0.2rem 0;
+    padding-left: 0.5rem;
+  }
+}
+
+/* Avatar perfil (fora navbar) */
+.profile-avatar:hover { box-shadow: 0 2px 12px #28a74522; }
+
+/* --- Fix para navbar fixa (ajuste o valor conforme altura real) --- */
+.pt-navbar-fix {
+  padding-top: 64px; /* Ajuste aqui de acordo com .main-header real */
+}
+@media (max-width: 991.98px) {
+  .pt-navbar-fix {
+    padding-top: 64px;
+  }
+}
+
+/* Footer customizado (pode ser .main-footer) */
+footer,
+.main-footer {
+  background: #23272b;
+  color: #f8f9fa;
+  padding: 2rem 0 1rem 0;
+  margin-top: 3rem;
+  font-size: 1rem;
+}
+.footer-links a {
+  color: #fff;
+  text-decoration: underline dotted;
+  margin: 0 12px;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: #ffc107; }
+.footer-social i {
+  font-size: 1.25em;
+  margin: 0 8px;
+  color: #adb5bd;
+  transition: color 0.2s;
+}
+.footer-social i:hover { color: #fff; }
+
+/* Alinhamento correto do menu em mobile */
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    width: 100%;
+  }
+  .navbar-nav .nav-item {
+    width: 100%;
+  }
+  .navbar-nav .nav-link,
+  .navbar-nav .btn,
+  .navbar-nav .logout-link {
+    justify-content: flex-start;
+    text-align: left;
+    width: 100%;
+    padding-left: 1rem;
+  }
+}
+

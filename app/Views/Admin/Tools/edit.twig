@@ -1,0 +1,44 @@
+{% extends "layout_admin.twig" %}
+{% block title %}Editar Ferramenta{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  <style>
+    .card-footer.d-flex .btn, .card-footer.d-flex form { width: 100%; margin-bottom: .5rem; }
+    .card-footer.d-flex form { display: block !important; }
+    @media (min-width: 768px) {
+      .card-footer.d-flex { flex-direction: row !important; justify-content: flex-end !important; align-items: center !important; gap: .75rem; }
+      .card-footer.d-flex .btn, .card-footer.d-flex form { width: auto !important; margin-bottom: 0 !important; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="card-title mb-0">
+          <i class="fas fa-tools mr-2"></i> EDITAR FERRAMENTA
+        </h3>
+      </div>
+      <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate autocomplete="off">
+        <div class="card-body pb-2">
+          {% if success %}
+            <div class="alert alert-success mb-3">{{ success }}</div>
+          {% endif %}
+          {% if error %}
+            <div class="alert alert-danger mb-3">{{ error }}</div>
+          {% endif %}
+          {% include "Admin/Tools/_form.twig" %}
+        </div>
+        {% include "Admin/Tools/_footer_actions.twig" with {
+          'show_save': true,
+          'show_cancel': true,
+          'show_delete': false
+        } %}
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

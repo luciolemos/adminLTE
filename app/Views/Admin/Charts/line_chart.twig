@@ -1,0 +1,109 @@
+{% extends 'layout_admin.twig' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4">
+  <h1>{{ title }}</h1>
+  <p>Visualize abaixo a distribuição dos usuários por status.</p>
+</div>
+
+<div class="card shadow mb-4">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h3 class="card-title mb-0"><i class="fas fa-chart-bar mr-2"></i> Usuários por Status</h3>
+  </div>
+  <div class="card-body">
+    <canvas id="lineChart" style="max-width:700px;max-height:380px;margin:auto;display:block;"></canvas>
+  </div>
+</div>
+
+<script src="/assets/adminlte/plugins/chart.js/Chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Gradiente bonito para a linha
+  const ctx = document.getElementById('lineChart').getContext('2d');
+  let gradient = ctx.createLinearGradient(0, 0, 0, 340);
+  gradient.addColorStop(0, "rgba(0,123,255,0.22)");
+  gradient.addColorStop(0.9, "rgba(0,123,255,0)");
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ labels|json_encode|raw }},
+      datasets: [{
+        label: 'Usuários cadastrados',
+        data: {{ counts|json_encode|raw }},
+        fill: true,
+        backgroundColor: gradient,
+        borderColor: '#2563eb',
+        borderWidth: 3,
+        tension: 0.3,
+        pointBackgroundColor: '#0dcaf0',
+        pointBorderColor: '#fff',
+        pointRadius: 6,
+        pointHoverRadius: 9,
+        pointStyle: 'circle',
+        pointBorderWidth: 2,
+        shadowOffsetX: 0,
+        shadowOffsetY: 2,
+        shadowBlur: 4,
+        shadowColor: "rgba(40,80,180,0.2)",
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { font: { size: 15, family: "'Montserrat', 'Roboto', Arial, sans-serif" } }
+        },
+        tooltip: {
+          backgroundColor: '#161d31',
+          titleColor: '#fff',
+          bodyColor: '#f0f6ff',
+          borderColor: '#2563eb',
+          borderWidth: 1,
+          padding: 15,
+          titleFont: { size: 16, weight: 'bold' },
+          bodyFont: { size: 15 }
+        }
+      },
+      layout: {
+        padding: 12
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Status',
+            color: '#495057',
+            font: { size: 14, weight: 'bold' }
+          },
+          ticks: { font: { size: 13 } }
+        },
+        y: {
+          grid: {
+            color: "rgba(180,180,220,0.15)",
+            borderDash: [3, 3]
+          },
+          title: {
+            display: true,
+            text: 'Quantidade',
+            color: '#495057',
+            font: { size: 14, weight: 'bold' }
+          },
+          ticks: { stepSize: 1, font: { size: 13 } },
+          beginAtZero: true
+        }
+      },
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart'
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

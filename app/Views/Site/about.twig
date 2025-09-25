@@ -1,0 +1,480 @@
+{% extends "layout_site.twig" %}
+{% block title %}Sobre o Projeto — Arquitetura & Recursos{% endblock %}
+
+{% block styles %}
+  <style>
+    :root {
+      --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      --gradient-success: linear-gradient(135deg, #198754 0%, #0d6e3d 100%);
+    }
+    
+    .about-section {
+      background: #fff;
+      border-radius: 1.2rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      padding: 2.5rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .about-section h2 {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    .about-list li {
+      margin-bottom: 0.8rem;
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    
+    .about-list li:before {
+      
+      color: #2563eb;
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+    
+    .about-list strong {
+      background: var(--gradient-success);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
+    }
+    
+    .about-section h4 {
+      margin-top: 2.5rem;
+      color: #2563eb;
+      font-weight: 700;
+      border-bottom: 2px solid #f0f4ff;
+      padding-bottom: 0.5rem;
+    }
+    
+    .code-block {
+      background: #f8f9fa;
+      border-radius: 0.5rem;
+      padding: 1.2rem 1.4rem;
+      font-size: 0.95rem;
+      margin-bottom: 1.2rem;
+      border-left: 4px solid #2563eb;
+      font-family: 'Fira Code', monospace;
+    }
+    
+    .feature-badge {
+      font-size: 0.85rem;
+      margin: 0.2rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 50px;
+      font-weight: 500;
+    }
+    
+    .about-timeline li {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      padding-left: 1.8rem;
+    }
+    
+    .about-timeline li:before {
+     
+      color: #198754;
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+    
+    .team-card {
+      transition: all 0.3s ease;
+      border: none;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .team-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .team-card .card-img-top {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tech-icon {
+      font-size: 1.8rem;
+      margin-right: 0.8rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .timeline-item:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #2563eb;
+    }
+    
+    .timeline-item:after {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 20px;
+      width: 2px;
+      height: 100%;
+      background: #e9ecef;
+    }
+    
+    .timeline-item:last-child:after {
+      display: none;
+    }
+    
+    .tech-stack-icon {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+      display: block;
+      filter: grayscale(30%);
+      transition: all 0.3s ease;
+    }
+    
+    .tech-stack-icon:hover {
+      filter: grayscale(0%);
+      transform: scale(1.1);
+    }
+  </style>
+{% endblock %}
+
+
+{% block content %}
+  <section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1><i class="fas fa-users"></i> {{ title }}</h1>
+      </div>
+      <div class="col-sm-6">
+        {% include 'Partials/_breadcrumb.twig' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <div class="text-center mb-5" data-aos="fade-down">
+    <h1 class="display-4 fw-bold mb-3">
+      <span class="text-gradient-primary">Fullstack PHP</span>
+    </h1>
+    <p class="lead text-muted mx-auto" style="max-width: 700px;">
+      Uma plataforma moderna construída com as melhores práticas de desenvolvimento, combinando performance, segurança e experiência do usuário.
+    </p>
+  </div>
+
+
+  <div class="row mb-5">
+    <div class="col-md-6 mb-4" data-aos="fade-up">
+      <div class="team-card card h-100 text-center p-4">
+        <div class="card-body">
+          <img src="https://github.com/luciolemos.png" class="rounded-circle card-img-top mb-4 shadow" alt="Lucio Lemos">
+          <h4 class="mb-2">Lucio Flavio Lemos</h4>
+          <p class="text-muted small mb-3">Desenvolvedor Fullstack • PHP Specialist</p>
+          <p class="mb-4">
+            Arquiteto principal da solução, responsável pela estrutura do projeto, configuração de servidor, lógica de negócios e integração entre todas as camadas do sistema.
+          </p>
+          <div class="d-flex justify-content-center">
+            <a href="https://github.com/luciolemos" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+              <i class="bi bi-github me-1"></i> GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="150">
+      <div class="team-card card h-100 text-center p-4">
+        <div class="card-body">
+          <img src="https://avatars.githubusercontent.com/u/6180701?s=200&v=4" class="rounded-circle card-img-top mb-4 shadow" alt="Jake AI">
+          <h4 class="mb-2">Jake (AI Assistant)</h4>
+          <p class="text-muted small mb-3">AI Pair Programmer • Code Reviewer</p>
+          <p class="mb-4">
+            Assistente de desenvolvimento responsável por sugerir melhorias na arquitetura, otimizar código e garantir a aplicação das melhores práticas de programação.
+          </p>
+          <div class="d-flex justify-content-center">
+            <a href="https://openai.com/chatgpt" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+              <i class="bi bi-cpu me-1"></i> Sobre Jake
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="mb-5" data-aos="fade-up">
+    <h4 class="text-center mb-4"><i class="bi bi-stack tech-icon"></i>Tecnologias Utilizadas</h4>
+    <div class="row text-center">
+      <div class="col-4 col-md-2 mb-4">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" class="tech-stack-icon" alt="PHP">
+        <small class="d-block mt-2">PHP 8+</small>
+      </div>
+      <div class="col-4 col-md-2 mb-4">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/twig/twig-original.svg" class="tech-stack-icon" alt="Twig">
+        <small class="d-block mt-2">Twig</small>
+      </div>
+      <div class="col-4 col-md-2 mb-4">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" class="tech-stack-icon" alt="Bootstrap">
+        <small class="d-block mt-2">Bootstrap 5</small>
+      </div>
+      <div class="col-4 col-md-2 mb-4">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" class="tech-stack-icon" alt="MySQL">
+        <small class="d-block mt-2">MySQL</small>
+      </div>
+      <div class="col-4 col-md-2 mb-4">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/composer/composer-original.svg" class="tech-stack-icon" alt="Composer">
+        <small class="d-block mt-2">Composer</small>
+      </div>
+      <div class="col-4 col-md-2 mb-4">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apache/apache-original.svg" class="tech-stack-icon" alt="Apache">
+        <small class="d-block mt-2">Apache</small>
+      </div>
+    </div>
+  </div>
+
+
+  <section class="about-section" data-aos="fade-up">
+    <h2><i class="bi bi-diagram-3 me-2"></i>Arquitetura do Sistema</h2>
+    <p class="lead">
+      Uma estrutura <strong>MVC modular</strong> projetada para escalabilidade e manutenção simplificada, com separação clara de responsabilidades e padrões modernos de desenvolvimento.
+    </p>
+    
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <h4><i class="bi bi-box-seam tech-icon"></i> Núcleo do Sistema</h4>
+        <ul class="about-list">
+          <li><strong>App Kernel:</strong> Centraliza inicialização, roteamento e tratamento de requisições.</li>
+          <li><strong>Router:</strong> Sistema de roteamento avançado com suporte a middlewares.</li>
+          <li><strong>Controller Base:</strong> Classe pai com métodos utilitários para todos os controllers.</li>
+          <li><strong>Autoloader:</strong> Carregamento automático de classes via PSR-4.</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h4><i class="bi bi-shield-lock tech-icon"></i> Segurança</h4>
+        <ul class="about-list">
+          <li><strong>CSRF Protection:</strong> Tokens em todos os formulários.</li>
+          <li><strong>Auth Middleware:</strong> Controle de acesso por níveis de permissão.</li>
+          <li><strong>Input Validation:</strong> Sanitização e validação de dados.</li>
+          <li><strong>Secure Sessions:</strong> Gerenciamento seguro de sessões.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <h4><i class="bi bi-database tech-icon"></i> Camada de Dados</h4>
+        <ul class="about-list">
+          <li><strong>Active Record:</strong> Padrão para interação com banco de dados.</li>
+          <li><strong>Migrations:</strong> Controle de versão do esquema do banco.</li>
+          <li><strong>Query Builder:</strong> Interface fluente para consultas SQL.</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h4><i class="bi bi-layers tech-icon"></i> Frontend</h4>
+        <ul class="about-list">
+          <li><strong>Twig Templates:</strong> Sistema de templates com herança.</li>
+          <li><strong>Componentes UI:</strong> Biblioteca reutilizável de componentes.</li>
+          <li><strong>Asset Pipeline:</strong> Minificação e versionamento de assets.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+    <section class="about-section">
+    <h2 class="mb-4"><i class="fas fa-code-branch me-2"></i>Sobre o Portal — Arquitetura Fullstack</h2>
+    <p>
+      Este portal é um <strong>sistema modular e escalável</strong> construído do zero em <b>PHP</b> seguindo o padrão <b>MVC</b>, pensado para máxima produtividade e segurança.<br>
+      Aqui você confere a estrutura, recursos implementados e diferenciais técnicos do projeto.
+    </p>
+    
+    <h4><i class="fas fa-sitemap me-1"></i> Núcleo/Core</h4>
+    <ul class="about-list">
+      <li><strong>App.php:</strong> Inicializa o roteador, carrega arquivos de rotas (<code>admin.php</code>, <code>auth.php</code>, <code>web.php</code>), faz o dispatch para controller/método.</li>
+      <li><strong>Controller.php:</strong> Base dos controllers. Instancia Twig, traz métodos utilitários (<code>render()</code>, <code>redirect()</code>).</li>
+      <li><strong>Router.php:</strong> Registra rotas (GET, POST...), suporta parâmetros dinâmicos e dispatch para <code>Controller@action</code> ou closure.</li>
+    </ul>
+
+    <h4><i class="fas fa-shield-alt me-1"></i> Middlewares</h4>
+    <ul class="about-list">
+      <li><strong>AuthMiddleware.php:</strong> Protege rotas por nível de cargo (ex: Admin). Verifica <code>$_SESSION['user']</code>, redireciona e exibe flash se não autorizado.</li>
+    </ul>
+
+    <h4><i class="fas fa-tools me-1"></i> Helpers</h4>
+    <ul class="about-list">
+      <li><strong>csrf.php:</strong> Gera e valida tokens CSRF para proteção dos formulários.</li>
+      <li><strong>flash.php:</strong> Funções <code>set_flash</code> e <code>get_flash</code> (mensagens na sessão).</li>
+      <li><strong>validate.php:</strong> Validações de campos, uploads e regras customizadas.</li>
+      <li><strong>url.php:</strong> Helpers para manipulação de URLs (opcional).</li>
+    </ul>
+
+    <h4><i class="fas fa-database me-1"></i> Models</h4>
+    <ul class="about-list">
+      <li><strong>User.php:</strong> CRUD de usuários, autenticação, busca, contagem por status/cargo e verificação de senha.</li>
+      <li><strong>Tool.php:</strong> CRUD de ferramentas e integração de features técnicas.</li>
+    </ul>
+
+    <h4><i class="fas fa-folder-tree me-1"></i> Controllers</h4>
+    <ul class="about-list">
+      <li><strong>Admin:</strong> Dashboard, UserController, ToolController, ChartController, DatatableController, etc.</li>
+      <li><strong>Auth:</strong> LoginController, LogoutController.</li>
+      <li><strong>Site:</strong> HomeController, PageController.</li>
+      <li><strong>ErrorController:</strong> Gerencia erros e páginas 404.</li>
+    </ul>
+
+    <h4><i class="fas fa-desktop me-1"></i> Views & Layout (Twig + AdminLTE)</h4>
+    <ul class="about-list">
+      <li><strong>Admin/:</strong> Painéis, usuários, ferramentas, gráficos.</li>
+      <li><strong>Auth/:</strong> login.twig.</li>
+      <li><strong>Site/:</strong> home, about, contact, register.</li>
+      <li><strong>Parciais:</strong> Navbar, sidebar, breadcrumb.</li>
+    </ul>
+
+    <h4><i class="fas fa-code me-1"></i> Front Controller (public/index.php)</h4>
+    <ul class="about-list">
+      <li>Inicia sessão (<code>session_start</code>), carrega autoload, helpers e configurações do .env.</li>
+      <li>Modo DEV/prod, tratamento de erros, inicia <b>App</b>.</li>
+    </ul>
+
+    <h4><i class="fas fa-route me-1"></i> Rotas & Segurança</h4>
+    <ul class="about-list">
+      <li><strong>admin.php:</strong> Rotas protegidas para administração e dashboards.</li>
+      <li><strong>auth.php:</strong> Rotas públicas de autenticação.</li>
+      <li><strong>web.php:</strong> Home, about, contato e demais rotas abertas.</li>
+    </ul>
+
+    <h4><i class="fas fa-table me-1"></i> DataTables & JavaScript</h4>
+    <ul class="about-list">
+      <li>CRUD com tabelas exportáveis, filtros automáticos, exportação avançada (Excel, CSV, PDF, Print), correção dinâmica de índices.</li>
+    </ul>
+
+    <h4><i class="fas fa-check-double me-1"></i> Funcionalidades Implementadas</h4>
+    <div class="mb-3">
+      <span class="badge bg-success feature-badge">Autenticação/Admin-only</span>
+      <span class="badge bg-info feature-badge">CRUD Usuários/Ferramentas</span>
+      <span class="badge bg-primary feature-badge">Dashboard Dinâmico</span>
+      <span class="badge bg-warning text-dark feature-badge">Exportação Avançada</span>
+      <span class="badge bg-secondary feature-badge">Upload de Avatar</span>
+      <span class="badge bg-danger feature-badge">Proteção CSRF</span>
+      <span class="badge bg-dark feature-badge">Layout Responsivo</span>
+    </div>
+    <ul class="about-timeline">
+      <li> Multi-cargo: Admin, Editor, Moderador, Usuário</li>
+      <li> Mensagens flash robustas (sucesso/erro)</li>
+      <li> Navegação protegida e logout seguro</li>
+      <li> Integração pronta para novos módulos (Tools, Features, Relatórios)</li>
+    </ul>
+
+    <hr>
+    <div class="mt-3">
+      <h5 class="text-primary mb-1"><i class="fas fa-rocket me-1"></i>Por que usar este portal?</h5>
+      <p>
+        Estrutura pronta para acelerar projetos, treinar equipes ou entregar soluções reais.  
+        Fácil manutenção, didática moderna, recursos de segurança e responsividade.
+      </p>     
+    </div>
+  </section>
+
+ 
+  <section class="about-section" data-aos="fade-up">
+    <h2><i class="bi bi-stars tech-icon"></i>Principais Funcionalidades</h2>
+    <p>
+      O sistema foi projetado com foco em produtividade e experiência do desenvolvedor, oferecendo:
+    </p>
+    
+    <div class="mb-4">
+      <span class="badge bg-primary bg-gradient feature-badge"><i class="bi bi-shield-check me-1"></i>Autenticação Segura</span>
+      <span class="badge bg-success bg-gradient feature-badge"><i class="bi bi-people me-1"></i>Multi-nível de Acesso</span>
+      <span class="badge bg-info bg-gradient feature-badge"><i class="bi bi-table me-1"></i>CRUD Avançado</span>
+      <span class="badge bg-warning bg-gradient feature-badge"><i class="bi bi-graph-up me-1"></i>Dashboards</span>
+      <span class="badge bg-danger bg-gradient feature-badge"><i class="bi bi-file-earmark-arrow-down me-1"></i>Exportação de Dados</span>
+      <span class="badge bg-dark bg-gradient feature-badge"><i class="bi bi-envelope me-1"></i>Sistema de Email</span>
+      <span class="badge bg-secondary bg-gradient feature-badge"><i class="bi bi-image me-1"></i>Upload de Arquivos</span>
+      <span class="badge bg-purple bg-gradient feature-badge"><i class="bi bi-search me-1"></i>Busca Avançada</span>
+    </div>
+    
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <h5><i class="bi bi-check-circle text-success me-2"></i>Recursos Implementados</h5>
+        <ul class="about-timeline">
+          <li>Sistema completo de autenticação com recuperação de senha</li>
+          <li>Controle de acesso baseado em cargos (RBAC)</li>
+          <li>Gerenciamento de usuários com perfis customizáveis</li>
+          <li>Logs de atividade do sistema</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h5><i class="bi bi-lightning-charge text-warning me-2"></i>Performance</h5>
+        <ul class="about-timeline">
+          <li>Cache de consultas frequentes</li>
+          <li>Otimização de assets frontend</li>
+          <li>Lazy loading de recursos</li>
+          <li>Compressão de saída</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="about-section" data-aos="fade-up">
+    <h2><i class="bi bi-clock-history tech-icon"></i>Linha do Tempo</h2>
+    <p>
+      Desenvolvimento evolutivo com foco em entrega contínua de valor:
+    </p>
+    
+    <div class="mt-4">
+      <div class="timeline-item">
+        <h5>Fase 1: Núcleo</h5>
+        <p class="text-muted small">Estrutura MVC básica, roteamento, sistema de templates e autenticação inicial.</p>
+      </div>
+      <div class="timeline-item">
+        <h5>Fase 2: Segurança</h5>
+        <p class="text-muted small">Implementação de CSRF, middlewares, validação de entrada e proteção contra ataques comuns.</p>
+      </div>
+      <div class="timeline-item">
+        <h5>Fase 3: Funcionalidades</h5>
+        <p class="text-muted small">CRUDs completos, sistema de permissões, upload de arquivos e integração com serviços externos.</p>
+      </div>
+      <div class="timeline-item">
+        <h5>Fase 4: Otimização</h5>
+        <p class="text-muted small">Cache, performance, tratamento de erros e refinamento da experiência do usuário.</p>
+      </div>
+    </div>
+  </section>
+
+
+   <div class="d-flex flex-column flex-md-row" style="gap:.75rem;">
+    <a href="/admin/dashboard" class="btn btn-outline-primary btn-lg"><i class="fas fa-tachometer-alt"></i> Dashboard </a>
+    <a href="/" class="btn btn-outline-success btn-lg px-4"> <i class="fas fa-book me-2"></i> Documentação </a>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}{{ title|default('Portal') }}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {# --- AdminLTE & FontAwesome --- #}
+  <link rel="stylesheet" href="/assets/adminlte/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/adminlte/dist/css/adminlte.min.css">
+
+  <style>
+    body { background: #f8f9fa; }
+    .navbar-dark { background: #23272b !important; }
+    .navbar-dark .navbar-brand,
+    .navbar-dark .navbar-nav .nav-link { color: #fff !important; }
+    .navbar-dark .navbar-nav .nav-link:hover,
+    .navbar-dark .navbar-nav .nav-link:focus { color: rgb(23, 110, 240) !important; }
+    .navbar { margin-bottom: 2rem; }
+    .container { max-width: 90%; }
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .navbar-nav .nav-link {
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+    .nav-register {
+      font-weight: 700;
+      border-radius: 30px;
+      padding: .3rem 1.2rem;
+      background: #007bff;
+      color: #fff !important;
+      margin-left: 0.6rem;
+      transition: background 0.2s;
+    }
+    .nav-register:hover { background: #0056b3; color: #fff !important; }
+    .nav-admin {
+      font-weight: 700;
+      border-radius: 30px;
+      padding: .3rem 1.2rem;
+      background: #28a745;
+      color: #fff !important;
+      margin-left: 0.6rem;
+      transition: background 0.2s;
+    }
+    .nav-admin:hover { background: #19692c; color: #fff !important; }
+    .avatar-nav {
+      width: 28px;
+      height: 28px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 7px;
+      vertical-align: middle;
+    }
+    .logout-link {
+      color: #dc3545 !important;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    .logout-link:hover {
+      text-decoration: underline;
+      color: #a71d2a !important;
+    }
+    .btn-logout-desktop { display: inline-block; }
+    .btn-logout-mobile { display: none; }
+    @media (max-width: 991.98px) {
+      .navbar-nav { align-items: flex-start !important; }
+      .navbar-nav .nav-item { width: 100%; }
+      .navbar-nav .nav-link,
+      .navbar-nav .btn,
+      .navbar-nav .logout-link {
+        justify-content: flex-start;
+        text-align: left;
+        width: 100%;
+      }
+      .btn-logout-desktop { display: none; }
+      .btn-logout-mobile {
+        display: inline-block;
+        width: 100%;
+        margin: 0.6rem 0 0.2rem 0;
+        padding-left: 0.5rem;
+      }
+    }
+    footer {
+      background: #23272b;
+      color: #f8f9fa;
+      padding: 2rem 0 1rem 0;
+      margin-top: 3rem;
+      font-size: 1rem;
+    }
+    .footer-links a {
+      color: #fff;
+      text-decoration: underline dotted;
+      margin: 0 12px;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #ffc107; }
+    .footer-social i {
+      font-size: 1.25em;
+      margin: 0 8px;
+      color: #adb5bd;
+      transition: color 0.2s;
+    }
+    .footer-social i:hover { color: #fff; }
+  </style>
+  {% block styles %}{% endblock %}
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark border-bottom shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-cube mr-1 text-primary"></i> Meu Portal
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-home mr-1"></i> HOME</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about"><i class="fas fa-info-circle mr-1"></i> SOBRE</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact"><i class="fas fa-envelope mr-1"></i> CONTATO</a>
+          </li>
+          {% if user %}
+            {# Se for admin, mostra link para dashboard #}
+            {% if user.cargo == 'Admin' %}
+              <li class="nav-item">
+                <a class="nav-link nav-admin" href="/admin/dashboard">
+                  <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                </a>
+              </li>
+            {% endif %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="{{ user.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}" class="avatar-nav mr-2">
+                
+                <span>
+                  {{ user.nome|split(' ')[0]|capitalize }}
+                 
+                  <span class="badge badge-{{ user.cargo == 'Admin'
+        ? 'danger'
+        : (user.cargo == 'Editor'
+          ? 'warning'
+          : (user.cargo == 'Moderador'
+            ? 'info'
+            : 'secondary')) }} ml-1" title="Perfil no Sistema" style="font-size:.82em;">
+    {{ user.cargo|default('Usuário') }}
+    </span>
+                </span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="profileDropdown">
+               <div class="dropdown-header text-center p-3">
+                  
+                  <img src="{{ user.avatar ?: '/assets/adminlte/dist/img/avatar7.png' }}" alt="Avatar" class="img-circle mb-2 shadow" style="width:54px;height:54px;object-fit:cover;">
+                  <div>{{ user.nome }}</div>
+                  <div class="text-muted small">{{ user.cel }}</div>
+                  <div class="text-muted small">{{ user.email }}</div>
+    <div>  
+  <span class="badge badge-{{ user.cargo == 'Admin'
+        ? 'danger'
+        : (user.cargo == 'Editor'
+          ? 'warning'
+          : (user.cargo == 'Moderador'
+            ? 'info'
+            : 'secondary')) }}" title="Perfil no Sistema">
+    {{ user.cargo|default('Usuário') }}
+  </span>
+  <span class="badge badge-{{ user.status == 'Ativo'
+        ? 'success'
+        : (user.status == 'Banido'
+          ? 'danger'
+          : (user.status == 'Pendente'
+            ? 'warning'
+            : 'secondary')) }} ml-1" title="Status no sistema">
+    {{ user.status }}
+  </span>
+   </div>
+
+                </div>
+                {% if user.cargo == 'Admin' %}
+                  <a class="dropdown-item" href="/admin/dashboard">
+                    <i class="fas fa-tachometer-alt mr-2 text-primary"></i> Dashboard
+                  </a>
+                {% endif %}
+                <a class="dropdown-item" href="/profile">
+                  <i class="fas fa-user-circle mr-2 text-success"></i> Meu Perfil
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" href="/logout">
+                  <i class="fas fa-sign-out-alt mr-2"></i> Sair
+                </a>
+              </div>
+            </li>
+            <li class="nav-item btn-logout-mobile">
+              <a href="/logout" class="logout-link">
+                <i class="fas fa-sign-out-alt"></i> SAIR
+              </a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="/register">
+                <i class="fas fa-user-plus mr-1"></i> REGISTRAR
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">
+                <i class="fas fa-user-lock mr-1"></i> LOGIN
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- /NAVBAR -->
+
+  <main class="container">
+    {# FLASH message #}
+    {% if flash %}
+      <div id="flashMsg"
+           class="alert alert-{{ flash.type == 'success' ? 'success' : 'danger' }} alert-dismissible fade show shadow-sm mb-3"
+           role="alert"
+           style="position: relative;">
+        {{ flash.msg }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar" style="position: absolute; right: 10px; top: 10px;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center">
+    <div class="footer-links mb-2">
+      <a href="/">Home</a> |
+      <a href="/about">Sobre</a> |
+      <a href="/contact">Contato</a> |
+      <a href="/register">Registrar</a> |
+      <a href="/login">Admin</a>
+    </div>
+    <div class="footer-social mb-3">
+      <a href="https://github.com/seuprojeto" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="mailto:contato@seudominio.com"><i class="fas fa-envelope"></i></a>
+      <a href="https://wa.me/5599999999999" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="#"><i class="fab fa-facebook"></i></a>
+    </div>
+    <div>
+      &copy; {{ "now"|date("Y") }} Meu Portal &middot; Todos os direitos reservados.
+    </div>
+  </footer>
+  <!-- /FOOTER -->
+
+  {# --- SCRIPTS ESSENCIAIS --- #}
+  <script src="/assets/adminlte/plugins/jquery/jquery.min.js"></script>
+  <script src="/assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/adminlte/dist/js/adminlte.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

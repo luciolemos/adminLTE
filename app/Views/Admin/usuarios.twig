@@ -1,0 +1,108 @@
+{% extends 'admin_base.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-2">
+    <div class="col-sm-6">
+      <h1>Painel de Controle</h1>
+    </div>
+    <div class="col-sm-6">
+      <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="/admin/dashboard">Home</a></li>
+        <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Card de exemplo: Total de Usuários -->
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>{{ users|length }}</h3>
+          <p>Usuários cadastrados</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <a href="/admin/users" class="small-box-footer">
+          Ver todos <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Card de exemplo: Usuário logado -->
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3>Olá, {{ user.nome|e }}</h3>
+          <p>Seu papel: {{ user.cargo|e }}</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <a href="/admin/users/edit?id={{ user.id }}" class="small-box-footer">
+          Editar perfil <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Adicione outros cards conforme desejar... -->
+  </div>
+
+  <!-- Tabela de usuários recentes -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h3 class="card-title">Usuários Recentes</h3>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Avatar</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Cargo</th>
+            <th>Status</th>
+            <th>Data Cadastro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users|slice(0,10) %}
+            <tr>
+              <td>
+                {% if u.avatar %}
+                  <img src="{{ u.avatar|e }}" class="user-avatar" alt="Avatar">
+                {% else %}
+                  <img src="/assets/adminlte/dist/img/avatar.png" class="user-avatar" alt="Avatar padrão">
+                {% endif %}
+              </td>
+              <td>{{ u.nome|e }}</td>
+              <td>{{ u.email|e }}</td>
+              <td>{{ u.cargo|e }}</td>
+              <td>
+                <span class="badge badge-status 
+                  {% if u.status == 'Ativo' %}badge-success
+                  {% elseif u.status == 'Inativo' %}badge-secondary
+                  {% elseif u.status == 'Pendente' %}badge-warning
+                  {% elseif u.status == 'Banido' %}badge-danger
+                  {% else %}badge-light
+                  {% endif %}
+                ">
+                  {{ u.status|e }}
+                </span>
+              </td>
+              <td>{{ u.data_cadastro|date("d/m/Y H:i") }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
