@@ -1,6 +1,6 @@
 # AdminLTE MVC Starter
 
-Sistema administrativo PHP 8.4 (MVC) com autenticação, CRUD de usuários, proteção de rotas, AdminLTE 3 integrado, flash messages com toasts, e fácil expansão para dashboards, relatórios e widgets.
+Sistema administrativo PHP 8.4 (MVC) com autenticação, CRUD de usuários, proteção de rotas, usando o AdminLTE3 integrado, flash messages com toasts, e fácil expansão para dashboards, relatórios e widgets.
 
 ## Sumário
 
