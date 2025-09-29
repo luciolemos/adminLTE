@@ -1,38 +1,102 @@
 {% extends "layout_admin.twig" %}
+
 {% block title %}Nova Ferramenta{% endblock %}
 
 {% block styles %}
   {{ parent() }}
   <style>
-    .card-footer.d-flex .btn, .card-footer.d-flex form { width: 100%; margin-bottom: .5rem; }
-    .card-footer.d-flex form { display: block !important; }
+    .card-footer.d-flex .btn,
+    .card-footer.d-flex form {
+      width: 100%;
+      margin-bottom: .5rem;
+    }
+    .card-footer.d-flex form {
+      display: block !important;
+    }
     @media (min-width: 768px) {
-      .card-footer.d-flex { flex-direction: row !important; justify-content: flex-end !important; align-items: center !important; gap: .75rem; }
-      .card-footer.d-flex .btn, .card-footer.d-flex form { width: auto !important; margin-bottom: 0 !important; }
+      .card-footer.d-flex {
+        flex-direction: row !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: .75rem;
+      }
+      .card-footer.d-flex .btn,
+      .card-footer.d-flex form {
+        width: auto !important;
+        margin-bottom: 0 !important;
+      }
     }
   </style>
 {% endblock %}
 
 {% block content %}
-<section class="content">
-  <div class="container-fluid">
-    <div class="card shadow mb-4">
-      <div class="card-header bg-primary text-white">
-        <h3 class="card-title mb-0">
-          <i class="fas fa-tools mr-2"></i> NOVA FERRAMENTA
-        </h3>
-      </div>
-      <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate autocomplete="off">
-        <div class="card-body pb-2">
-          {% include "Admin/Tools/_form.twig" %}
+
+  {# --------- HEADER (Título e Breadcrumb) --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1><i class="fas fa-tools"></i> {{ title }}</h1>
         </div>
-        {% include "Admin/Tools/_footer_actions.twig" with {
-          'show_save': true,
-          'show_cancel': false,
-          'show_delete': false
-        } %}
-      </form>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-outline shadow">
+            <div class="card-header">
+               <div class="card-tools">
+                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
+                  <i class="fas fa-tachometer-alt"></i>
+                </a>
+                {#<a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta">
+                  <i class="fas fa-plus"></i>
+                </a>#}
+                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
+                  <i class="fas fa-expand"></i>
+                </button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    {#<a href="/admin/tools/create" class="dropdown-item">
+                      <i class="fas fa-plus"></i> Nova ferramenta
+                    </a>#}
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-cog"></i> Configurações
+                    </a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate autocomplete="off">
+              <div class="pb-5">
+                {% include "Admin/Tools/_form.twig" %}
+              </div>
+
+              {% include "Admin/Tools/_footer_actions.twig" with {
+                'show_save': true,
+                'show_cancel': false,
+                'show_delete': false
+              } %}
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 {% endblock %}

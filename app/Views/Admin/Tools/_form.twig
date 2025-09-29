@@ -1,87 +1,133 @@
 {# Tools/_form.twig #}
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
 {% if errors %}
   <div class="alert alert-danger shadow-sm mb-3">
     <ul class="mb-0">
       {% for field, msg in errors %}
-        <li><strong>{{ field|replace({'_':' '})|capitalize }}:</strong> {{ msg }}</li>
+        <li>
+          <strong>{{ field|replace({'_':' '})|capitalize }}:</strong> {{ msg }}
+        </li>
       {% endfor %}
     </ul>
   </div>
 {% endif %}
+
 <div class="row">
   <div class="col-md-4">
     <div class="form-group text-center">
       <label class="font-weight-bold mb-2">Imagem da Ferramenta</label>
+
       <div class="mb-3">
         <img id="imgPreview"
              src="{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.jpg') }}"
              class="rounded shadow-sm border"
              style="width:300px; height:200px; object-fit:cover;">
       </div>
+
       <div class="custom-file mb-2">
-        <input type="file" name="img_tool" accept="image/*" class="custom-file-input" id="imgInput" onchange="showImgPreview(event)">
+        <input type="file"
+               name="img_tool"
+               accept="image/*"
+               class="custom-file-input"
+               id="imgInput">
         <label class="custom-file-label" for="imgInput">Selecionar imagem...</label>
       </div>
-      <small class="form-text text-muted">Formatos: JPG, PNG, GIF. Máx: 2MB.</small>
+
+      <small class="form-text text-muted">
+        Formatos: JPG, PNG, GIF. Máx: 2MB.
+      </small>
     </div>
   </div>
+
   <div class="col-md-8">
     <div class="form-row">
       <div class="form-group col-md-12">
         <label>Descrição <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" name="desc_tool" value="{{ tool.desc_tool|default('') }}" required maxlength="100">
+        <input type="text"
+               class="form-control"
+               name="desc_tool"
+               value="{{ tool.desc_tool|default('') }}"
+               required
+               maxlength="100">
       </div>
     </div>
+
     <div class="form-row">
       <div class="form-group col-md-12">
         <label>Características Gerais</label>
-        <textarea class="form-control" name="caracteristica_tool" rows="4">{{ tool.caracteristica_tool|default('') }}</textarea>
-        <small class="form-text text-muted">Inclua informações adicionais, condições, detalhes etc.</small>
+        <textarea class="form-control"
+                  name="caracteristica_tool"
+                  rows="4">{{ tool.caracteristica_tool|default('') }}</textarea>
+        <small class="form-text text-muted">
+          Inclua informações adicionais, condições, detalhes etc.
+        </small>
       </div>
     </div>
+
     <div class="form-row">
       <div class="form-group col-md-6">
         <label>Categoria <span class="text-danger">*</span></label>
         <select name="cat_tool" class="form-control" required>
           {% set categorias = [
-            'Ferramentas elétricas','Ferramentas hidráulicas','Ferramentas de carpintaria e marcenaria','Ferramentas de corte','Ferramentas de medição','Outras'
+            'Ferramentas elétricas',
+            'Ferramentas hidráulicas',
+            'Ferramentas de carpintaria e marcenaria',
+            'Ferramentas de corte',
+            'Ferramentas de medição',
+            'Outras'
           ] %}
           {% for cat in categorias %}
-            <option value="{{ cat }}" {% if tool.cat_tool == cat %}selected{% endif %}>{{ cat }}</option>
+            <option value="{{ cat }}" {% if tool.cat_tool == cat %}selected{% endif %}>
+              {{ cat }}
+            </option>
           {% endfor %}
         </select>
       </div>
+
       <div class="form-group col-md-6">
         <label>Estado <span class="text-danger">*</span></label>
         <select name="type_tool" class="form-control" required>
           {% set estados = ['Nova','Usada','Restaurada','Danificada'] %}
           {% for e in estados %}
-            <option value="{{ e }}" {% if tool.type_tool == e %}selected{% endif %}>{{ e }}</option>
+            <option value="{{ e }}" {% if tool.type_tool == e %}selected{% endif %}>
+              {{ e }}
+            </option>
           {% endfor %}
         </select>
       </div>
     </div>
+
     <div class="form-row">
       <div class="form-group col-md-6">
         <label>Data de Aquisição</label>
-        <input type="date" class="form-control" name="data_aquisicao" value="{{ tool.data_aquisicao|default('') }}">
+        <input type="date"
+               class="form-control"
+               name="data_aquisicao"
+               value="{{ tool.data_aquisicao|default('') }}">
       </div>
     </div>
   </div>
 </div>
+
 <script>
-function showImgPreview(event) {
-  const [file] = event.target.files;
-  if (file) {
-    document.getElementById('imgPreview').src = URL.createObjectURL(file);
-    event.target.nextElementSibling.textContent = file.name;
-  }
-}
-document.querySelectorAll('.custom-file-input').forEach(function(input) {
-  input.addEventListener('change', function(e){
-    let fileName = e.target.files[0]?.name || 'Selecionar imagem...';
-    e.target.nextElementSibling.textContent = fileName;
+  document.addEventListener('DOMContentLoaded', function () {
+    const inputFile = document.getElementById('imgInput');
+    const imgPreview = document.getElementById('imgPreview');
+
+    if (inputFile) {
+      inputFile.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const label = e.target.nextElementSibling;
+
+        if (file) {
+          imgPreview.src = URL.createObjectURL(file);
+          label.textContent = file.name;
+        } else {
+          imgPreview.src = "{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.jpg') }}";
+          label.textContent = 'Selecionar imagem...';
+        }
+      });
+    }
   });
-});
 </script>

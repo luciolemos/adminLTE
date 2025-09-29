@@ -19,7 +19,23 @@
 {% endblock %}
 
 {% block content %}
+
   {# --------- HEADER (Título e Breadcrumb) --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1><i class="fas fa-tools"></i> {{ title }}</h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# --------- HEADER (Título e Breadcrumb) --------- #}
+  {#
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -32,7 +48,9 @@
               {% if loop.last or not item.url %}
                 <li class="breadcrumb-item active">{{ item.title }}</li>
               {% else %}
-                <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>
+                <li class="breadcrumb-item">
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </li>
               {% endif %}
             {% endfor %}
           </ol>
@@ -40,116 +58,185 @@
       </div>
     </div>
   </section>
+  #}
+
   <section class="content">
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
           <div class="card card-outline shadow">
             <div class="card-header">
+              {#
               <a href="/admin/tools/create" class="btn btn-success font-weight-bold shadow-sm">
-                Nova Ferramenta
+                <i class="fas fa-plus"></i> Nova ferramenta
               </a>
+              #}
               <div class="card-tools">
-                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
-                <a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta"><i class="fas fa-plus"></i></a>
-                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar"><i class="fas fa-expand"></i></button>
+                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
+                  <i class="fas fa-tachometer-alt"></i>
+                </a>
+                <a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta">
+                  <i class="fas fa-plus"></i>
+                </a>
+                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
+                  <i class="fas fa-expand"></i>
+                </button>
                 <div class="btn-group">
                   <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
-                    <i class="fas fa-wrench"></i>
+                    <i class="fas fa-ellipsis-v"></i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    <a href="/admin/tools/create" class="dropdown-item"><i class="fas fa-plus"></i> Nova ferramenta</a>
+                    <a href="/admin/tools/create" class="dropdown-item">
+                      <i class="fas fa-plus"></i> Nova ferramenta
+                    </a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Configurações</a>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-cog"></i> Configurações
+                    </a>
                   </div>
                 </div>
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar"><i class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
+                  <i class="fas fa-minus"></i>
+                </button>
               </div>
             </div>
+
             <div class="card-body">
               <div class="table-responsive">
-                <table id="toolsTable" class="table table-bordered table-hover table-striped align-middle mb-0" style="width:100%">
+                <table
+                  id="toolsTable"
+                  class="table table-bordered table-hover table-striped align-middle mb-0"
+                  style="width:100%"
+                >
                   <thead class="thead-light">
                     <tr>
-                      <th class="text-center">Imagem</th>
-                      <th>Descrição</th>
-                      <th>Características</th>
-                      <th>Categoria</th>
-                      <th>Tipo</th>
-                      <th class="text-center">Data Aquisição</th>
-                      <th class="text-center" style="width:140px;">Ações</th>
+                      <th class="text-center">IMAGEM</th>
+                      <th class="text-center">DESCRIÇÃO</th>
+                      <th class="text-center">CARACTERÍSTICAS</th>
+                      <th class="text-center">CATEGORIA</th>
+                      <th class="text-center">TIPO</th>
+                      <th class="text-center">DATA AQUISIÇÃO</th>
+                      <th class="text-center" style="width:140px;">AÇÕES</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for tool in tools %}
-                    <tr>
-                      <td class="text-center">
-                        <img src="{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.png') }}"
-                             alt="Imagem"
-                             class="rounded shadow"
-                             style="width:57px; height:38px; object-fit:cover;">
-                      </td>
-                      <td>
-                        <span class="font-weight-bold">{{ tool.desc_tool }}</span>
-                      </td>
-                      <td>{{ tool.caracteristica_tool|length > 80 ? tool.caracteristica_tool|slice(0,80) ~ '...' : tool.caracteristica_tool }}</td>
-                      <td>{{ tool.cat_tool }}</td>
-                      <td class="text-center">
-                         <span class="badge badge
-                            {% if tool.type_tool == 'Nova' %}badge-success
-                            {% elseif tool.type_tool == 'Usada' %}badge-primary
-                            {% elseif tool.type_tool == 'Restaurada' %}badge-warning
-                            {% elseif tool.type_tool == 'Danificada' %}badge-danger
-                            {% else %}badge-secondary{% endif %}">
+                      <tr>
+                        <td class="text-center">
+                          <img
+                            src="{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.png') }}"
+                            alt="Imagem"
+                            class="rounded shadow"
+                            style="width:57px; height:38px; object-fit:cover;"
+                          >
+                        </td>
+                        <td>
+                          <span class="font-weight-bold">{{ tool.desc_tool }}</span>
+                        </td>
+                        <td>
+                          {{ tool.caracteristica_tool|length > 80
+                            ? tool.caracteristica_tool|slice(0, 80) ~ '...'
+                            : tool.caracteristica_tool
+                          }}
+                        </td>
+                        <td>{{ tool.cat_tool }}</td>
+                        <td class="text-center">
+                          <span
+                            class="badge
+                              {% if tool.type_tool == 'Nova' %} badge-success
+                              {% elseif tool.type_tool == 'Usada' %} badge-primary
+                              {% elseif tool.type_tool == 'Restaurada' %} badge-warning
+                              {% elseif tool.type_tool == 'Danificada' %} badge-danger
+                              {% else %} badge-secondary
+                              {% endif %}"
+                          >
                             {{ tool.type_tool }}
-                         </span>
-                      </td>
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          {{ tool.data_aquisicao ? tool.data_aquisicao|date('d/m/Y') : '-' }}
+                        </td>
+                        <td class="text-center">
+                          <div class="btn-group btn-group-sm align-items-center" role="group" aria-label="Ações">
+                            <a
+                              href="/admin/tools/show/{{ tool.id }}"
+                              class="btn btn-info"
+                              data-toggle="tooltip"
+                              title="Visualizar"
+                            >
+                              <i class="fas fa-eye fa-fw"></i>
+                            </a>
+                            <a
+                              href="/admin/tools/edit/{{ tool.id }}"
+                              class="btn btn-warning"
+                              data-toggle="tooltip"
+                              title="Editar"
+                            >
+                              <i class="fas fa-edit fa-fw"></i>
+                            </a>
+                            <button
+                              type="submit"
+                              form="del{{ tool.id }}"
+                              class="btn btn-danger"
+                              data-toggle="tooltip"
+                              title="Excluir"
+                              aria-label="Excluir"
+                            >
+                              <i class="fas fa-trash-alt fa-fw"></i>
+                            </button>
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button
+                                type="button"
+                                class="btn btn-secondary dropdown-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                title="Mais ações"
+                              >
+                                <i class="fas fa-cog fa-fw"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#">
+                                  <i class="fas fa-info-circle mr-2"></i> Detalhes
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                  <i class="fas fa-clone mr-2"></i> Duplicar
+                                </a>
+                              </div>
+                            </div>
+                          </div>
 
-                      <td class="text-center">
-                        {{ tool.data_aquisicao ? tool.data_aquisicao|date('d/m/Y') : '-' }}
-                      </td>
-                      <td class="text-center">
-            <div class="btn-group btn-group-sm align-items-center" role="group" aria-label="Ações">
-  <a href="/admin/tools/show/{{ tool.id }}" class="btn btn-info" data-toggle="tooltip" title="Visualizar">
-    <i class="fas fa-eye fa-fw"></i>
-  </a>
-  <a href="/admin/tools/edit/{{ tool.id }}" class="btn btn-warning" data-toggle="tooltip" title="Editar">
-    <i class="fas fa-edit fa-fw"></i>
-  </a>
-  <button type="submit" form="del{{ tool.id }}" class="btn btn-danger" data-toggle="tooltip" title="Excluir" aria-label="Excluir">
-    <i class="fas fa-trash-alt fa-fw"></i>
-  </button>
-  <div class="btn-group btn-group-sm" role="group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Mais ações">
-      <i class="fas fa-cog fa-fw"></i>
-    </button>
-    <div class="dropdown-menu dropdown-menu-right">
-      <a class="dropdown-item" href="#"><i class="fas fa-info-circle mr-2"></i> Detalhes</a>
-      <a class="dropdown-item" href="#"><i class="fas fa-clone mr-2"></i> Duplicar</a>
-    </div>
-  </div>
-</div>
-<form id="del{{ tool.id }}" method="post" action="/admin/tools/delete/{{ tool.id }}" style="display:none" onsubmit="return confirm('Excluir ferramenta?');"></form>
-
-                      </td>
-                    </tr>
+                          <form
+                            id="del{{ tool.id }}"
+                            method="post"
+                            action="/admin/tools/delete/{{ tool.id }}"
+                            style="display:none"
+                            onsubmit="return confirm('Excluir ferramenta?');"
+                          ></form>
+                        </td>
+                      </tr>
                     {% else %}
-                    <tr>
-                      <td colspan="6" class="text-center text-muted">Nenhuma ferramenta cadastrada.</td>
-                    </tr>
+                      <tr>
+                        <td colspan="7" class="text-center text-muted">
+                          Nenhuma ferramenta cadastrada.
+                        </td>
+                      </tr>
                     {% endfor %}
                   </tbody>
                 </table>
               </div>
             </div>
-            <div class="card-footer py-2">
+
+            <div class="card-footer py-3">
               <div class="row align-items-center">
                 <div class="col-md-6">
-                  <span class="text-muted">Total: <strong>{{ tools|length }}</strong> ferramenta(s)</span>
+                  <span class="text-muted">
+                    Total de ferramentas: <strong>{{ tools|length }}</strong> ferramenta(s)
+                  </span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <a href="/admin/tools/create" class="btn btn-sm btn-success">
-                    <i class="fas fa-plus"></i> Adicionar Ferramenta
+                  <a href="/admin/tools/create" class="btn btn-success font-weight-bold shadow-sm">
+                    <i class="fas fa-plus"></i> Nova ferramenta
                   </a>
                 </div>
               </div>
@@ -164,18 +251,18 @@
 {% block scripts %}
   {{ parent() }}
   <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
       // Inicializa o DataTable das ferramentas!
       const table = $('#toolsTable').DataTable({
         responsive: true,
-        pagingType: "simple_numbers",
+        pagingType: 'simple_numbers',
         dom:
           "<'row align-items-center mb-3'<'col-md-4 dt-buttons'B><'col-md-4 text-center'l><'col-md-4'f>>" +
           "<'row'<'col-12'tr>>" +
           "<'row mt-2'<'col-md-5'i><'col-md-7'p>>",
         lengthMenu: [
           [5, 10, 15, 20, 25, -1],
-          [5, 10, 15, 20, 25, "Todas"]
+          [5, 10, 15, 20, 25, 'Todas']
         ],
         pageLength: 5,
         buttons: [
@@ -215,14 +302,14 @@
                 alignment: 'center',
                 margin: [0, 0, 0, 12]
               });
-              doc.footer = function(currentPage, pageCount) {
+              doc.footer = function (currentPage, pageCount) {
                 return {
                   text: `Página ${currentPage} de ${pageCount}`,
                   alignment: 'center',
                   margin: [0, 10, 0, 0]
                 };
               };
-              doc.header = function() {
+              doc.header = function () {
                 return {
                   columns: [
                     { text: 'Painel AdminLTE - Relatório', alignment: 'left', margin: [40, 20], fontSize: 10 },
@@ -231,12 +318,12 @@
                 };
               };
               doc.content[1].layout = {
-                hLineWidth: function() { return 0.5; },
-                vLineWidth: function() { return 0.5; },
-                hLineColor: function() { return '#aaa'; },
-                vLineColor: function() { return '#aaa'; },
-                paddingLeft: function() { return 8; },
-                paddingRight: function() { return 8; }
+                hLineWidth: function () { return 0.5; },
+                vLineWidth: function () { return 0.5; },
+                hLineColor: function () { return '#aaa'; },
+                vLineColor: function () { return '#aaa'; },
+                paddingLeft: function () { return 8; },
+                paddingRight: function () { return 8; }
               };
             }
           },
@@ -254,7 +341,8 @@
                   <small>Data: ${dataAtual}</small>
                 </div>
               `);
-              $(win.document.body).find('table')
+              $(win.document.body)
+                .find('table')
                 .addClass('compact')
                 .css('font-size', '12px')
                 .css('border-collapse', 'collapse');
@@ -280,10 +368,11 @@
       $('[data-toggle="tooltip"]').tooltip();
 
       // Filtro por categoria via URL (?cat_tool=)
-      function getUrlParameter(sParam) {
-        let sPageURL = window.location.search.substring(1),
-          sURLVariables = sPageURL.split('&'),
-          sParameterName;
+      function getUrlParameter (sParam) {
+        let sPageURL = window.location.search.substring(1);
+        let sURLVariables = sPageURL.split('&');
+        let sParameterName;
+
         for (let i = 0; i < sURLVariables.length; i++) {
           sParameterName = sURLVariables[i].split('=');
           if (sParameterName[0] === sParam) {
@@ -292,9 +381,10 @@
         }
         return false;
       }
+
       const cat_tool = getUrlParameter('cat_tool');
       if (cat_tool) {
-        table.column(2).search(cat_tool).draw(); // Coluna categoria
+        table.column(3).search(cat_tool).draw(); // Coluna CATEGORIA (0=img,1=desc,2=carac,3=cat)
       }
     });
   </script>

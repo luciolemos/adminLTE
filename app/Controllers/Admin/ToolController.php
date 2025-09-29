@@ -97,11 +97,11 @@ class ToolController extends Controller
         $breadcrumb = [
             ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
             ['title' => 'Ferramentas', 'url' => '/admin/tools'],
-            ['title' => 'Nova', 'url' => null],
+            ['title' => 'Nova ferramenta', 'url' => null],
         ];
 
         return $this->render('Admin/Tools/create', [
-            'title'      => 'Nova Ferramenta',
+            'title'      => 'Nova ferramenta',
             'tool'       => $tool,
             'errors'     => $errors,
             'user'       => $_SESSION['user'],
@@ -165,11 +165,11 @@ class ToolController extends Controller
         $breadcrumb = [
             ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
             ['title' => 'Ferramentas', 'url' => '/admin/tools'],
-            ['title' => 'Editar', 'url' => null],
+            ['title' => 'Editar ferramenta', 'url' => null],
         ];
 
         return $this->render('Admin/Tools/edit', [
-            'title'      => 'Editar Ferramenta',
+            'title'      => 'Editar ferramenta',
             'tool'       => $tool,
             'errors'     => $errors,
             'user'       => $_SESSION['user'],

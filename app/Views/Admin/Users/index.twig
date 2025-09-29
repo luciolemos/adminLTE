@@ -62,14 +62,14 @@
         <div class="col-12">
           <div class="card card-outline shadow">
             <div class="card-header">
-            {# 
+            {#
               <a href="/admin/users/create" class="btn btn-success font-weight-bold shadow-sm">
                 <i class="fas fa-user-plus"></i> Adicionar Usuário
               </a>
             #}
               <div class="card-tools">
                 <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
-                <a href="/admin/users/create" class="btn btn-tool" title="Novo usuário"><i class="fas fa-user-plus"></i></a>
+                <a href="/admin/users/create" class="btn btn-tool" title="Novo usuário"><i class="fas fa-plus"></i></a>
                 <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar"><i class="fas fa-expand"></i></button>
                 <div class="btn-group">
                   <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
@@ -89,18 +89,18 @@
             <div class="card-body">
               <div class="table-responsive">
                 {# ---------------- TABELA PRINCIPAL ---------------- #}
-                <table id="usersTable" class="table table-bordered table-hover table-striped table-sm align-middle mb-0" style="width:100%">
+                <table id="usersTable" class="table table-bordered table-hover table-striped align-middle mb-0" style="width:100%">
                   <thead class="thead-light">
                     <tr>
                       <th class="text-center">AVATAR</th>
                       <th class="text-center">NOME</th>
                       <th class="text-center">CPF</th>
-                      <th class="text-center">DATA NASCIMENTO</th>
+                      <th class="text-center">NASCIMENTO</th>
                       <th class="text-center">CONTATO</th>
                       <th class="text-center">E-MAIL</th>
                       <th class="text-center">CARGO</th>
                       <th class="text-center">STATUS</th>
-                      <th class="text-center">DATA CADASTRO</th>
+                      <th class="text-center">CADASTRO</th>
                       <th class="text-center" style="width:140px;">AÇÕES</th>
                     </tr>
                   </thead>
@@ -175,7 +175,7 @@
                 </div>
                 <div class="col-md-6 text-right">
                   <a href="/admin/users/create" class="btn btn-success font-weight-bold shadow-sm">
-                    <i class="fas fa-user-plus"></i> Adicionar Usuário
+                    <i class="fas fa-user-plus"></i> Novo usuário
                   </a>
                 </div>
               </div>

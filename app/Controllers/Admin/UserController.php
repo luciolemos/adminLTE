@@ -30,7 +30,7 @@ class UserController extends Controller
 
         $breadcrumb = [
             ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Usuários cadastrados', 'url' => null],
+            ['title' => 'Usuários', 'url' => null],
         ];
 
         return $this->render('Admin/Users/index', [
