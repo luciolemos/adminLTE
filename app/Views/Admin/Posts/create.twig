@@ -15,10 +15,13 @@
       {% endfor %}
     </select>
   </div>
-  <div class="mb-3">
-    <label>Conteúdo</label>
-    <textarea name="conteudo" class="form-control" rows="8">{{ data.conteudo|default('') }}</textarea>
-  </div>
+
+<div class="mb-3">
+  <label>Conteúdo</label>
+  <textarea id="conteudo" name="conteudo" class="form-control" rows="10">{{ data.conteudo|default('') }}</textarea>
+</div>
+
+
   <div class="mb-3">
     <label>Imagem (opcional)</label>
     <input type="file" name="imagem" class="form-control">
@@ -37,3 +40,28 @@
   {% endif %}
 </form>
 {% endblock %}
+
+{% block scripts %}
+  {{ parent() }}
+  <!-- TinyMCE (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      tinymce.init({
+        selector: '#conteudo',
+        height: 400,
+        menubar: true,
+        plugins: 'advlist autolink lists link image charmap preview anchor ' +
+                 'searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+        toolbar: 'undo redo | formatselect | ' +
+                 'bold italic backcolor | alignleft aligncenter ' +
+                 'alignright alignjustify | bullist numlist outdent indent | ' +
+                 'removeformat | help | code',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+      });
+    });
+  </script>
+{% endblock %}
+
+
+

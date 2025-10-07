@@ -5,6 +5,7 @@
 
 {% block styles %}
     {{ parent() }}
+    
     {# CSS plugins só do admin #}
     <link rel="stylesheet" href="/assets/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="/assets/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
@@ -12,6 +13,8 @@
     <link rel="stylesheet" href="/assets/adminlte/plugins/datatables-rowgroup/css/rowGroup.bootstrap4.min.css">
     <link rel="stylesheet" href="/assets/adminlte/plugins/datatables-select/css/select.bootstrap4.min.css">
     {# ... outros se precisar ... #}
+    {# CSS customizado da sidebar #}
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
 {% endblock %}
 
 {% block body_class %}hold-transition sidebar-mini layout-fixed{% endblock %}
@@ -46,6 +49,11 @@
     <script src="/assets/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
     <script src="/assets/adminlte/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
     <script src="/assets/adminlte/plugins/datatables-select/js/dataTables.select.min.js"></script>
+
+    {# --- Suporte para PDF e Print nos botões personalizados --- #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
       $(document).ready(function() {
         $('.toast').toast({ delay: 5000 });

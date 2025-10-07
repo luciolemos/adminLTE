@@ -292,22 +292,61 @@ Para site público, exemplo em web.php:
 
 - MVC inspirado em Slim Framework e Laravel (mas 100% autoral)
 
-- Apoio e automação por Click here to try a new GPT! 
+- Apoio e automação por Click here to try a new GPT!
 
- 
+## Quando você “renomeia um card” (ex.: de “Ferramentas de carpintaria e marcenaria” para “Ferramentas de marcenaria”), há alguns lugares típicos que precisam mudar para tudo ficar consistente.
+### Guia rápido (ordem recomendada)
 
+#### 1. Fonte da Verdade (validação)
 
+- app/Helpers/validate.php
+  - Atualize a lista do validate_tool_categoria() (ou função equivalente).
+  -⚠️ Se você mantiver outra lista em qualquer lugar, você cria divergência. O ideal é que só exista essa lista (ou que ela venha de um único config).
 
- 
+#### 2. Banco de dados
 
- 
+- Se a coluna tools.cat_tool for ENUM:
+  - ALTER TABLE para incluir o novo literal e remover o antigo.
+  - (Opcional) UPDATE para migrar registros antigos para o novo rótulo.
 
+- Se for VARCHAR:
+  - Nada a mudar no schema, mas pode valer um UPDATE para padronizar rótulos legados.
 
-     
+#### 3. Model
 
+- app/Models/Tool.php
+  - create() já usa validate_tool_categoria() — ok.
+  - update(): garanta que também use validate_tool_categoria() (e não validate_string()).
+  - Se houver métodos como countByCategory($cat), certifique-se de que os lugares que o chamam passem o novo rótulo.
 
+#### 4. Controller
 
+- app/Controllers/Admin/ToolController.php
+  - dashboard(): atualize $cat_options para refletir o novo rótulo (é o que alimenta contadores e links).
+  - Em qualquer lugar que gere links com ?cat_tool=..., use o novo texto.
 
+#### 5. Views (Twig)
 
+- Formulário
+  - Views/Admin/Tools/_form.twig: atualize a lista do `<select>` de categorias.
 
+- Dashboard de Ferramentas
+  - Views/Admin/Tools/dashboard.twig: atualize o rótulo exibido e o href dos cards:
+    - Ex.: /admin/tools?cat_tool=Ferramentas de marcenaria.
+
+- Listagem (index)
+  - Views/Admin/Tools/index.twig: o JS já filtra por ?cat_tool=; não precisa mudar se você passar exatamente o novo texto no link do card.
+
+- Outras views (se exibirem a categoria “hardcoded” em textos, badges, tooltips etc).
+
+#### 6. Seeds/Migrations/Fixtures (se existirem)
+
+- Atualize valores default/seed para a nova categoria.
+- Garante que dados de demo não ressuscitem o rótulo antigo.
+
+#### 7. Cache
+- Limpe Twig cache e OPcache após as mudanças (se ativos).
+
+#### 8. Traduções (se houver i18n)
+- Atualize arquivos de tradução que referenciem o rótulo.
 

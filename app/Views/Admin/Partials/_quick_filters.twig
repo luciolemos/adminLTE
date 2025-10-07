@@ -1,0 +1,19 @@
+{# Partials/_quick_filters.twig #}
+<div class="card shadow-sm mb-4">
+  <div class="card-header d-flex align-items-center">
+    <h3 class="card-title mb-0">
+      <i class="fas fa-filter mr-1"></i> Filtros rápidos
+    </h3>
+  </div>
+<div class="card-body quick-filters d-flex flex-column flex-sm-row flex-wrap">
+  {% for f in filters %}
+    <a href="{{ f.url }}" 
+       class="btn btn-sm btn-{{ f.color|default('secondary') }} mb-2 mr-sm-2 flex-fill"
+       data-toggle="tooltip"
+       title="{{ f.title }}">
+      <i class="{{ f.icon }}"></i> {{ f.label }}
+    </a>
+  {% endfor %}
+</div>
+
+</div>

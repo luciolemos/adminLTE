@@ -31,6 +31,8 @@ $router->add('GET', '/admin/status/pie', 'Admin\\ChartController@pie_status');
 
 // CRUD usuários (Admin)
 $router->add('GET', '/admin/users', 'Admin\\UserController@index');
+// Dashboard de usuários (Admin)
+$router->add('GET', '/admin/users/dashboard', 'Admin\\UserController@dashboard');
 $router->add('GET', '/admin/users/create', 'Admin\\UserController@create');
 $router->add('POST', '/admin/users/create', 'Admin\\UserController@create');
 $router->add('GET', '/admin/users/edit/{id}', 'Admin\\UserController@edit');
@@ -44,18 +46,22 @@ $router->add('GET',  '/admin/users/show/{id}',   'Admin\\UserController@show'); 
 // CRUD Ferramentas (Admin\ToolController)
 // Ferramentas CRUD
 $router->add('GET',  '/admin/tools',             'Admin\\ToolController@index');
+$router->add('GET',  '/admin/tools/dashboard',   'Admin\\ToolController@dashboard'); // <-- nova rota dashboard
 $router->add('GET',  '/admin/tools/create',      'Admin\\ToolController@create');
 $router->add('POST', '/admin/tools/create',      'Admin\\ToolController@create');
 $router->add('GET',  '/admin/tools/edit/{id}',   'Admin\\ToolController@edit');
 $router->add('POST', '/admin/tools/edit/{id}',   'Admin\\ToolController@edit');
 $router->add('POST', '/admin/tools/delete/{id}', 'Admin\\ToolController@delete');
-$router->add('GET',  '/admin/tools/show/{id}',   'Admin\\ToolController@show'); // <-- nova rota show
+$router->add('GET',  '/admin/tools/show/{id}',   'Admin\\ToolController@show'); // rota show
+
 
 
 // CRUD Posts (Admin)
 $router->add('GET',  '/admin/posts',             'Admin\\PostController@index');
+$router->add('GET',  '/admin/posts/dashboard',   'Admin\\PostController@dashboard'); // <-- nova rota dashboard
 $router->add('GET',  '/admin/posts/create',      'Admin\\PostController@create');
 $router->add('POST', '/admin/posts/create',      'Admin\\PostController@create');
 $router->add('GET',  '/admin/posts/edit/{id}',   'Admin\\PostController@edit');
 $router->add('POST', '/admin/posts/edit/{id}',   'Admin\\PostController@edit');
 $router->add('POST', '/admin/posts/delete/{id}', 'Admin\\PostController@delete');
+$router->add('GET',  '/admin/posts/show/{id}',   'Admin\\PostController@show'); // rota show

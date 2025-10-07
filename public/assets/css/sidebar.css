@@ -1,0 +1,49 @@
+/* ====== HOME ====== */
+.nav-sidebar .highlight-home > .nav-link.active {
+  background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+}
+
+/* ====== DASHBOARD ====== */
+.nav-sidebar .highlight-dashboard > .nav-link.active {
+  background: linear-gradient(135deg, #ff512f, #dd2476) !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+}
+
+/* ====== USUÁRIOS ====== */
+.nav-sidebar .highlight-users > .nav-link.active {
+  background: linear-gradient(135deg, #56ab2f, #a8e063) !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+}
+
+/* ====== FERRAMENTAS ====== */
+.nav-sidebar .highlight-tools > .nav-link.active {
+  background: linear-gradient(135deg, #2193b0, #6dd5ed) !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+}
+
+/* ====== POSTS ====== */
+.nav-sidebar .highlight-posts > .nav-link.active {
+  background: linear-gradient(135deg, #f7971e, #ffd200) !important;
+  color: #423d00 !important; /* contraste melhor em amarelo */
+  border-radius: 0.5rem;
+}
+
+/* ====== DOCUMENTAÇÃO ====== */
+.nav-sidebar .highlight-docs > .nav-link.active {
+  background: linear-gradient(135deg, #485563, #29323c) !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+}
+
+/* ====== GRÁFICOS ====== */
+.nav-sidebar .highlight-charts > .nav-link.active {
+  background: linear-gradient(135deg, #396afc, #2948ff) !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+}
+

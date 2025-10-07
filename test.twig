@@ -7,3 +7,897 @@
               <small class="text-muted">{{ post.criado_em|date('d/m/Y H:i') }}</small>
             </span>
           </div>
+
+
+
+{#original ToolController#}
+          <?php
+namespace App\Controllers\Admin;
+
+use App\Core\Controller;
+use App\Models\Tool;
+
+/**
+ * Controller responsável pelo CRUD de ferramentas no painel admin.
+ * Protege todas as rotas para acesso apenas de administradores.
+ *
+ * Métodos:
+ *  - index()   : Lista todas as ferramentas
+ *  - create()  : Formulário + processamento de criação
+ *  - edit($id) : Formulário + processamento de edição
+ *  - delete($id): Exclui uma ferramenta
+ *  - show($id) : Visualiza detalhes de uma ferramenta
+ */
+class ToolController extends Controller
+{
+    /**
+     * Protege todos os métodos para acesso apenas de admins.
+     * Caso o usuário não seja admin, redireciona para o dashboard e exibe mensagem.
+     */
+    private function authorize()
+    {
+        if (empty($_SESSION['user']) || ($_SESSION['user']['cargo'] ?? '') !== 'Admin') {
+            set_flash('error', 'Acesso negado. Você precisa ser administrador!');
+            header('Location: /admin/dashboard');
+            exit;
+        }
+    }
+
+    /**
+     * Lista todas as ferramentas cadastradas.
+     * Exibe a tela index.twig.
+     */
+    public function index()
+    {
+        $this->authorize();
+
+        $toolModel = new Tool();
+        $tools = $toolModel->getAll();
+
+        $breadcrumb = [
+            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas', 'url' => null],
+        ];
+
+        return $this->render('Admin/Tools/index', [
+            'title'      => 'Ferramentas',
+            'tools'      => $tools,
+            'user'       => $_SESSION['user'],
+            'success'    => get_flash('success'),
+            'error'      => get_flash('error'),
+            'breadcrumb' => $breadcrumb
+        ]);
+    }
+
+    /**
+     * Exibe o formulário e processa a criação de uma nova ferramenta.
+     */
+    public function create()
+    {
+        $this->authorize();
+        require_once __DIR__ . '/../../Helpers/csrf.php';
+        require_once __DIR__ . '/../../Helpers/validate.php';
+
+        $errors = [];
+        $tool = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validação do token CSRF para evitar ataques
+            if (!csrf_validate($_POST['csrf_token'] ?? '')) {
+                $errors['csrf'] = 'Token CSRF inválido. Recarregue a página.';
+            }
+
+            $data = $_POST;
+
+            // Validação e upload da imagem da ferramenta
+            $imgResult = validate_img_upload($_FILES['img_tool'] ?? [], $errors);
+            if ($imgResult && !isset($errors['img_tool'])) {
+                $data['img_tool'] = $imgResult;
+            } else {
+                // Caso não seja feito upload, utiliza imagem padrão
+                $data['img_tool'] = '/assets/adminlte/dist/img/default_tool.png';
+            }
+
+            $toolModel = new Tool();
+            if (empty($errors) && $toolModel->create($data, $errors)) {
+                set_flash('success', 'Ferramenta cadastrada com sucesso!');
+                $this->redirect('/admin/tools');
+            }
+            // Mantém dados preenchidos no formulário se houver erro
+            $tool = $data;
+        }
+
+        $breadcrumb = [
+            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas', 'url' => '/admin/tools'],
+            ['title' => 'Nova ferramenta', 'url' => null],
+        ];
+
+        return $this->render('Admin/Tools/create', [
+            'title'      => 'Nova ferramenta',
+            'tool'       => $tool,
+            'errors'     => $errors,
+            'user'       => $_SESSION['user'],
+            'csrf_token' => csrf_token(),
+            'breadcrumb' => $breadcrumb
+        ]);
+    }
+
+    /**
+     * Exibe o formulário e processa a edição de uma ferramenta existente.
+     *
+     * @param int $id ID da ferramenta a ser editada.
+     */
+    public function edit($id)
+    {
+        $this->authorize();
+        require_once __DIR__ . '/../../Helpers/csrf.php';
+        require_once __DIR__ . '/../../Helpers/validate.php';
+
+        $toolModel = new Tool();
+        $tool = $toolModel->findById($id);
+        $errors = [];
+
+        if (!$tool) {
+            set_flash('error', 'Ferramenta não encontrada!');
+            $this->redirect('/admin/tools');
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Valida token CSRF
+            if (!csrf_validate($_POST['csrf_token'] ?? '')) {
+                $errors['csrf'] = 'Token CSRF inválido. Recarregue a página.';
+            }
+
+            $data = $_POST;
+
+            // Validação e possível upload de nova imagem
+            $imgResult = validate_img_upload($_FILES['img_tool'] ?? [], $errors);
+            if ($imgResult && !isset($errors['img_tool'])) {
+                // Remove imagem antiga do disco se não for a padrão
+                if (!empty($tool['img_tool']) && $tool['img_tool'] !== '/assets/adminlte/dist/img/default_tool.png') {
+                    $oldImgPath = $_SERVER['DOCUMENT_ROOT'] . $tool['img_tool'];
+                    if (file_exists($oldImgPath)) {
+                        @unlink($oldImgPath);
+                    }
+                }
+                $data['img_tool'] = $imgResult;
+            } else {
+                // Mantém imagem antiga
+                $data['img_tool'] = $tool['img_tool'];
+            }
+
+            if (empty($errors) && $toolModel->update($id, $data, $errors)) {
+                set_flash('success', 'Ferramenta atualizada com sucesso!');
+                $this->redirect('/admin/tools');
+            }
+            // Mantém dados do formulário em caso de erro
+            $tool = array_merge($tool, $data);
+        }
+
+        $breadcrumb = [
+            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas', 'url' => '/admin/tools'],
+            ['title' => 'Editar ferramenta', 'url' => null],
+        ];
+
+        return $this->render('Admin/Tools/edit', [
+            'title'      => 'Editar ferramenta',
+            'tool'       => $tool,
+            'errors'     => $errors,
+            'user'       => $_SESSION['user'],
+            'csrf_token' => csrf_token(),
+            'breadcrumb' => $breadcrumb
+        ]);
+    }
+
+    /**
+     * Exclui uma ferramenta existente e remove sua imagem do disco, caso não seja a padrão.
+     *
+     * @param int $id ID da ferramenta a ser excluída.
+     */
+    public function delete($id)
+    {
+        $this->authorize();
+        $toolModel = new Tool();
+        $tool = $toolModel->findById($id);
+
+        if (!$tool) {
+            set_flash('error', 'Ferramenta não encontrada!');
+        } else {
+            // Remove imagem física se não for a padrão
+            if (!empty($tool['img_tool']) && $tool['img_tool'] !== '/assets/adminlte/dist/img/default_tool.png') {
+                $imgPath = $_SERVER['DOCUMENT_ROOT'] . $tool['img_tool'];
+                if (file_exists($imgPath)) {
+                    @unlink($imgPath);
+                }
+            }
+            $toolModel->delete($id);
+            set_flash('success', 'Ferramenta excluída com sucesso!');
+        }
+        $this->redirect('/admin/tools');
+    }
+
+    /**
+     * Exibe os detalhes de uma ferramenta específica.
+     *
+     * @param int $id ID da ferramenta a ser exibida.
+     */
+    public function show($id)
+    {
+        $this->authorize();
+        $toolModel = new Tool();
+        $tool = $toolModel->findById($id);
+
+        if (!$tool) {
+            set_flash('error', 'Ferramenta não encontrada!');
+            $this->redirect('/admin/tools');
+        }
+
+        $breadcrumb = [
+            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas', 'url' => '/admin/tools'],
+            ['title' => 'Detalhes', 'url' => null],
+        ];
+
+        return $this->render('Admin/Tools/show', [
+            'title'      => 'Detalhes da Ferramenta',
+            'tool'       => $tool,
+            'user'       => $_SESSION['user'],
+            'breadcrumb' => $breadcrumb
+        ]);
+    }
+}
+
+{#original Models/Tool#}
+<?php
+namespace App\Models;
+
+use PDO;
+use Exception;
+
+class Tool
+{
+    protected $pdo;
+
+    public function __construct()
+    {
+        $dsn  = $_ENV['DB_DSN'] ?? '';
+        $user = $_ENV['DB_USER'] ?? '';
+        $pass = $_ENV['DB_PASS'] ?? '';
+        if (!$dsn) throw new Exception('DSN do banco de dados não encontrado.');
+        $this->pdo = new PDO($dsn, $user, $pass);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+
+    public function getAll()
+    {
+        return $this->pdo->query("SELECT * FROM tools ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findById($id)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM tools WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function create($data, &$errors = [])
+    {
+    require_once __DIR__ . '/../Helpers/validate.php';
+
+    $desc_tool = validate_string($data['desc_tool'] ?? '', 3, 255);
+    $caracteristica_tool = validate_string($data['caracteristica_tool'] ?? '', 0, 5000); // ou só trim($data['caracteristica_tool'])
+    $cat_tool = validate_tool_categoria($data['cat_tool'] ?? '');
+    $type_tool = validate_tool_estado($data['type_tool'] ?? '');
+    $data_aquisicao = validate_date($data['data_aquisicao'] ?? '');
+    $img_tool = $data['img_tool'] ?? '/assets/adminlte/dist/img/default_tool.png';
+
+    if (!$desc_tool) $errors['desc_tool'] = 'Descrição obrigatória (mínimo 3 caracteres).';
+    if (!$cat_tool) $errors['cat_tool'] = 'Selecione uma categoria válida.';
+    if (!$type_tool) $errors['type_tool'] = 'Selecione um estado válido.';
+
+    if (!empty($errors)) return false;
+
+    $stmt = $this->pdo->prepare("
+    INSERT INTO tools (
+    img_tool, 
+    desc_tool, 
+    caracteristica_tool, 
+    cat_tool, 
+    type_tool, 
+    data_aquisicao, 
+    created_at, 
+    updated_at
+    )VALUES (
+    :img_tool, 
+    :desc_tool, 
+    :caracteristica_tool, 
+    :cat_tool, 
+    :type_tool, 
+    :data_aquisicao, 
+    NOW(), 
+    NOW()
+    )
+    ");
+$stmt->execute([
+    'img_tool' => $img_tool,
+    'desc_tool' => $desc_tool,
+    'caracteristica_tool' => $caracteristica_tool,
+    'cat_tool' => $cat_tool,
+    'type_tool' => $type_tool,
+    'data_aquisicao' => $data_aquisicao
+]);
+    return true;
+   }
+
+
+    public function update($id, $data, &$errors = [])
+    {
+        require_once __DIR__ . '/../Helpers/validate.php';
+
+        $desc_tool = validate_string($data['desc_tool'] ?? '', 3, 255);
+        $caracteristica_tool = validate_string($data['caracteristica_tool'] ?? '', 0, 5000);
+        $cat_tool = validate_string($data['cat_tool'] ?? '', 2, 100);
+        $type_tool = validate_string($data['type_tool'] ?? '', 2, 100);
+        $data_aquisicao = validate_date($data['data_aquisicao'] ?? '');
+        $img_tool = $data['img_tool'] ?? '/assets/adminlte/dist/img/default_tool.png';
+
+        if (!$desc_tool) $errors['desc_tool'] = 'Descrição obrigatória (mínimo 3 caracteres).';
+        if (!$cat_tool) $errors['cat_tool'] = 'Categoria obrigatória (mínimo 2 caracteres).';
+        if (!$type_tool) $errors['type_tool'] = 'Tipo obrigatório (mínimo 2 caracteres).';
+
+        if (!empty($errors)) return false;
+
+        $stmt = $this->pdo->prepare("
+    UPDATE tools SET img_tool = :img_tool, desc_tool = :desc_tool, caracteristica_tool = :caracteristica_tool,
+    cat_tool = :cat_tool, type_tool = :type_tool, data_aquisicao = :data_aquisicao, updated_at = NOW()
+    WHERE id = :id
+");
+$stmt->execute([
+    'img_tool' => $img_tool,
+    'desc_tool' => $desc_tool,
+    'caracteristica_tool' => $caracteristica_tool,
+    'cat_tool' => $cat_tool,
+    'type_tool' => $type_tool,
+    'data_aquisicao' => $data_aquisicao,
+    'id' => $id
+]);
+        return true;
+    }
+
+    public function delete($id)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM tools WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+    }
+}
+
+
+{# ANTIGO SIDEBAR #}
+{% import "Partials/macros.twig" as macros %}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+
+  {# --------- LOGO / BRAND --------- #}
+  <a href="/admin/dashboard" class="brand-link">
+    <img src="/assets/adminlte/dist/img/AdminLTELogo.png"
+         alt="AdminLTE Logo"
+         class="brand-image img-circle elevation-3"
+         style="opacity:.8">
+    <span class="brand-text font-weight-light">AdminLTE 3</span>
+  </a>
+
+  <div class="sidebar">
+
+    {# --------- PAINEL DO USUÁRIO --------- #}
+    {% if user %}
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
+        <!-- Avatar -->
+        <div class="image">
+          <img src="{{ user.avatar ?: '/assets/adminlte/dist/img/avatar.png' }}"
+               class="img-circle elevation-2 user-avatar"
+               alt="Avatar"
+               style="width:38px; height:38px; object-fit:cover;">
+        </div>
+        <!-- Nome + Cargo -->
+        <div class="info ml-2">
+          <a href="/admin/users/show/{{ user.id }}" class="d-block">
+            <span class="text-white">
+              {{ user.nome|split(' ')[0]|capitalize }}
+              {{ macros.badge_cargo(user.cargo) }}
+            </span>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    {# --------- MENU DE NAVEGAÇÃO --------- #}
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column"
+          data-widget="treeview"
+          role="menu">
+
+        {# --------- LINK: Home --------- #}
+        <li class="nav-item">
+          <a href="/"
+             class="nav-link{% if current_path == '/' %} active{% endif %}">
+            <i class="nav-icon fas fa-home"></i>
+            <p>Home</p>
+          </a>
+        </li>
+
+        {% if user and user.cargo == 'Admin' %}
+
+          {# --------- LINK: Dashboard Principal --------- #}
+          <li class="nav-item">
+            <a href="/admin/dashboard"
+               class="nav-link{% if current_path == '/admin/dashboard' %} active{% endif %}">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+
+          {# --------- GRUPO: Usuários --------- #}
+          <li class="nav-item has-treeview {% if current_path starts with '/admin/users' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/users' %}active{% endif %}">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Usuários
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <!-- Listar -->
+              <li class="nav-item">
+                <a href="/admin/users"
+                   class="nav-link{% if current_path == '/admin/users' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <!-- Novo -->
+              <li class="nav-item">
+                <a href="/admin/users/create"
+                   class="nav-link{% if current_path == '/admin/users/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Novo</p>
+                </a>
+              </li>
+              <!-- Dashboard Usuários -->
+              <li class="nav-item">
+                <a href="/admin/users/dashboard"
+                   class="nav-link{% if current_path == '/admin/users/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>              
+            </ul>            
+          </li>
+
+          {# --------- GRUPO: Ferramentas --------- #}
+          <li class="nav-item has-treeview {% if current_path starts with '/admin/tools' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/tools' %}active{% endif %}">
+              <i class="nav-icon fas fa-tools"></i>
+              <p>
+                Ferramentas
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <!-- Listar -->
+              <li class="nav-item">
+                <a href="/admin/tools"
+                   class="nav-link{% if current_path == '/admin/tools' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <!-- Nova -->
+              <li class="nav-item">
+                <a href="/admin/tools/create"
+                   class="nav-link{% if current_path == '/admin/tools/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Nova</p>
+                </a>
+              </li>
+              <!-- Dashboard Ferramentas -->
+              <li class="nav-item">
+                <a href="/admin/tools/dashboard"
+                   class="nav-link{% if current_path == '/admin/tools/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          {# --------- LINK: Posts --------- #}
+          <li class="nav-item">
+            <a href="/admin/posts"
+               class="nav-link{% if current_path starts with '/admin/posts' %} active{% endif %}">
+              <i class="nav-icon fas fa-comments"></i>
+              <p>Posts</p>
+            </a>
+          </li>
+
+          {# --------- GRUPO: Documentação --------- #}
+          <li class="nav-item has-treeview{% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %} menu-open{% endif %}">
+            <a href="#"
+               class="nav-link{% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %} active{% endif %}">
+              <i class="nav-icon fas fa-folder"></i>
+              <p>
+                Documentação
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <!-- Características -->
+              <li class="nav-item">
+                <a href="/admin/caracteristicas"
+                   class="nav-link{% if current_path == '/admin/caracteristicas' %} active{% endif %}">
+                  <i class="fas fa-tools nav-icon"></i>
+                  <p>Características</p>
+                </a>
+              </li>
+              <!-- Estrutura -->
+              <li class="nav-item">
+                <a href="/admin/estrutura"
+                   class="nav-link{% if current_path == '/admin/estrutura' %} active{% endif %}">
+                  <i class="fas fa-network-wired nav-icon"></i>
+                  <p>Estrutura</p>
+                </a>
+              </li>
+              <!-- Composer -->
+              <li class="nav-item">
+                <a href="/admin/composer"
+                   class="nav-link{% if current_path == '/admin/composer' %} active{% endif %}">
+                  <i class="fas fa-file-code nav-icon"></i>
+                  <p>Composer</p>
+                </a>
+              </li>
+              <!-- .htaccess -->
+              <li class="nav-item">
+                <a href="/admin/documentacao"
+                   class="nav-link{% if current_path == '/admin/documentacao' %} active{% endif %}">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p>.htaccess / Virtual host</p>
+                </a>
+              </li>
+              <!-- Datatable -->
+              <li class="nav-item">
+                <a href="/admin/datatable"
+                   class="nav-link{% if current_path == '/admin/datatable' %} active{% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Datatable</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          {# --------- GRUPO: Gráficos --------- #}
+          <li class="nav-item has-treeview{% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %} menu-open{% endif %}">
+            <a href="#"
+               class="nav-link{% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %} active{% endif %}">
+              <i class="nav-icon fas fa-folder"></i>
+              <p>
+                Gráficos
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <!-- Status Bar -->
+              <li class="nav-item">
+                <a href="/admin/status/bar"
+                   class="nav-link{% if current_path == '/admin/status/bar' %} active{% endif %}">
+                  <i class="fas fa-chart-bar nav-icon"></i>
+                  <p>Status bar</p>
+                </a>
+              </li>
+              <!-- Status Doughnut -->
+              <li class="nav-item">
+                <a href="/admin/status/doughnut"
+                   class="nav-link{% if current_path == '/admin/status/doughnut' %} active{% endif %}">
+                  <i class="fas fa-chart-area nav-icon"></i>
+                  <p>Status doughnut</p>
+                </a>
+              </li>
+              <!-- Status Pie -->
+              <li class="nav-item">
+                <a href="/admin/status/pie"
+                   class="nav-link{% if current_path == '/admin/status/pie' %} active{% endif %}">
+                  <i class="fas fa-chart-area nav-icon"></i>
+                  <p>Status pie</p>
+                </a>
+              </li>
+              <!-- Cargos Pie -->
+              <li class="nav-item">
+                <a href="/admin/cargos/pie"
+                   class="nav-link{% if current_path == '/admin/cargos/pie' %} active{% endif %}">
+                  <i class="fas fa-chart-pie nav-icon"></i>
+                  <p>Cargos pie</p>
+                </a>
+              </li>
+              <!-- Linha -->
+              <li class="nav-item">
+                <a href="/admin/usuarios-por-mes"
+                   class="nav-link{% if current_path == '/admin/usuarios-por-mes' %} active{% endif %}">
+                  <i class="fas fa-chart-line nav-icon"></i>
+                  <p>Linha</p>
+                </a>
+              </li>
+              <!-- Gráfico de Barras -->
+              <li class="nav-item">
+                <a href="/admin/chartbar"
+                   class="nav-link{% if current_path == '/admin/chartbar' %} active{% endif %}">
+                  <i class="fas fa-chart-bar nav-icon"></i>
+                  <p>Gráfico de barras</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</aside>
+
+
+
+
+
+{# NOVO SIDEBAR #}
+{% import "Partials/macros.twig" as macros %}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Logo -->
+  <a href="/admin/dashboard" class="brand-link">
+    <img src="/assets/adminlte/dist/img/AdminLTELogo.png"
+         alt="AdminLTE Logo"
+         class="brand-image img-circle elevation-3"
+         style="opacity:.8">
+    <span class="brand-text font-weight-light">AdminLTE 3</span>
+  </a>
+
+  <div class="sidebar">
+    {% if user %}
+      <!-- Painel do Usuário -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center border-bottom">
+        <div class="image">
+          <img src="{{ user.avatar ?: '/assets/adminlte/dist/img/avatar.png' }}"
+               class="img-circle elevation-2 user-avatar"
+               alt="Avatar"
+               style="width:38px; height:38px; object-fit:cover;">
+        </div>
+        <div class="info ml-2">
+          <a href="/admin/users/show/{{ user.id }}" class="d-block">
+            <span class="text-white">
+              {{ user.nome|split(' ')[0]|capitalize }}
+              {{ macros.badge_cargo(user.cargo) }}
+            </span>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column"
+          data-widget="treeview"
+          role="menu">
+
+        <!-- Home -->
+        <li class="nav-item">
+          <a href="/"
+             class="nav-link{% if current_path == '/' %} active{% endif %}">
+            <i class="nav-icon fas fa-home"></i>
+            <p>Home</p>
+          </a>
+        </li>
+
+        {% if user and user.cargo == 'Admin' %}
+
+          <!-- Seção Dashboard -->
+          <li class="nav-header text-info">
+            <i class="fas fa-tachometer-alt mr-1"></i> DASHBOARD
+          </li>
+          <li class="nav-item">
+            <a href="/admin/dashboard"
+               class="nav-link{% if current_path == '/admin/dashboard' %} active{% endif %}">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Visão Geral</p>
+            </a>
+          </li>
+
+          <!-- Seção Usuários -->
+          <li class="nav-header text-success">
+            <i class="fas fa-users mr-1"></i> USUÁRIOS
+          </li>
+          <li class="nav-item has-treeview {% if current_path starts with '/admin/users' %}menu-open{% endif %}">
+            <a href="#" class="nav-link {% if current_path starts with '/admin/users' %}active{% endif %}">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Usuários <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/admin/users"
+                   class="nav-link{% if current_path == '/admin/users' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/users/create"
+                   class="nav-link{% if current_path == '/admin/users/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Novo</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/users/dashboard"
+                   class="nav-link{% if current_path == '/admin/users/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Seção Ferramentas -->
+          <li class="nav-header text-warning">
+            <i class="fas fa-tools mr-1"></i> FERRAMENTAS
+          </li>
+          <li class="nav-item has-treeview {% if current_path starts with '/admin/tools' %}menu-open{% endif %}">
+            <a href="#" class="nav-link {% if current_path starts with '/admin/tools' %}active{% endif %}">
+              <i class="nav-icon fas fa-tools"></i>
+              <p>Ferramentas <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/admin/tools"
+                   class="nav-link{% if current_path == '/admin/tools' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/tools/create"
+                   class="nav-link{% if current_path == '/admin/tools/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Nova</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/tools/dashboard"
+                   class="nav-link{% if current_path == '/admin/tools/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Seção Posts -->
+          <li class="nav-header text-primary">
+            <i class="fas fa-comments mr-1"></i> POSTS
+          </li>
+          <li class="nav-item">
+            <a href="/admin/posts"
+               class="nav-link{% if current_path starts with '/admin/posts' %} active{% endif %}">
+              <i class="nav-icon fas fa-comments"></i>
+              <p>Posts</p>
+            </a>
+          </li>
+
+          <!-- Seção Documentação -->
+          <li class="nav-header text-light">
+            <i class="fas fa-book mr-1"></i> DOCUMENTAÇÃO
+          </li>
+          <li class="nav-item has-treeview {% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %}menu-open{% endif %}">
+            <a href="#" class="nav-link {% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %}active{% endif %}">
+              <i class="nav-icon fas fa-folder"></i>
+              <p>Documentação <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/admin/caracteristicas"
+                   class="nav-link{% if current_path == '/admin/caracteristicas' %} active{% endif %}">
+                  <i class="fas fa-tools nav-icon"></i>
+                  <p>Características</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/estrutura"
+                   class="nav-link{% if current_path == '/admin/estrutura' %} active{% endif %}">
+                  <i class="fas fa-network-wired nav-icon"></i>
+                  <p>Estrutura</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/composer"
+                   class="nav-link{% if current_path == '/admin/composer' %} active{% endif %}">
+                  <i class="fas fa-file-code nav-icon"></i>
+                  <p>Composer</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/documentacao"
+                   class="nav-link{% if current_path == '/admin/documentacao' %} active{% endif %}">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p>.htaccess / Virtual host</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/datatable"
+                   class="nav-link{% if current_path == '/admin/datatable' %} active{% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Datatable</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Seção Gráficos -->
+          <li class="nav-header text-danger">
+            <i class="fas fa-chart-pie mr-1"></i> GRÁFICOS
+          </li>
+          <li class="nav-item has-treeview {% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %}menu-open{% endif %}">
+            <a href="#" class="nav-link {% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %}active{% endif %}">
+              <i class="nav-icon fas fa-chart-bar"></i>
+              <p>Gráficos <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/admin/status/bar"
+                   class="nav-link{% if current_path == '/admin/status/bar' %} active{% endif %}">
+                  <i class="fas fa-chart-bar nav-icon"></i>
+                  <p>Status bar</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/status/doughnut"
+                   class="nav-link{% if current_path == '/admin/status/doughnut' %} active{% endif %}">
+                  <i class="fas fa-chart-area nav-icon"></i>
+                  <p>Status doughnut</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/status/pie"
+                   class="nav-link{% if current_path == '/admin/status/pie' %} active{% endif %}">
+                  <i class="fas fa-chart-area nav-icon"></i>
+                  <p>Status pie</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/cargos/pie"
+                   class="nav-link{% if current_path == '/admin/cargos/pie' %} active{% endif %}">
+                  <i class="fas fa-chart-pie nav-icon"></i>
+                  <p>Cargos pie</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/usuarios-por-mes"
+                   class="nav-link{% if current_path == '/admin/usuarios-por-mes' %} active{% endif %}">
+                  <i class="fas fa-chart-line nav-icon"></i>
+                  <p>Linha</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/admin/chartbar"
+                   class="nav-link{% if current_path == '/admin/chartbar' %} active{% endif %}">
+                  <i class="fas fa-chart-bar nav-icon"></i>
+                  <p>Gráfico de barras</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</aside>
+

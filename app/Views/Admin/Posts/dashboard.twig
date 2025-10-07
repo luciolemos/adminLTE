@@ -1,0 +1,134 @@
+{% extends "layout_admin.twig" %}
+
+{% block title %}Dashboard de Posts{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  {% include 'Admin/Partials/_dashboard_styles.twig' %}
+{% endblock %}
+
+{% block content %}
+  {# --------- HEADER --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>
+            <i class="fas fa-comments"></i> {{ title }}
+          </h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# --------- CONTEÚDO PRINCIPAL --------- #}
+  <section class="content">
+    <div class="container-fluid">
+
+      <div class="row">
+        {# === KPI: Total de Posts === #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          <a href="/admin/posts" class="text-decoration-none">
+            <div class="card dashboard-card bg-gradient-secondary text-center h-100">
+              <span class="icon-bg"><i class="fas fa-comments"></i></span>
+              <div class="card-body position-relative">
+                <div class="card-title">Total de Posts</div>
+                <div class="display-4">{{ total_posts|default(0) }}</div>
+                <div><span class="btn btn-see">Ver todos</span></div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        {# === KPIs por Status === #}
+        {% set status_colors = {'publicado':'success','rascunho':'warning'} %}
+        {% set status_icons = {'publicado':'fa-check','rascunho':'fa-file-alt'} %}
+
+        {% for s in status_options %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/posts?status={{ s }}" class="text-decoration-none">
+              <div class="card dashboard-card bg-gradient-{{ status_colors[s]|default('secondary') }} text-center h-100">
+                <span class="icon-bg"><i class="fas {{ status_icons[s]|default('fa-tag') }}"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">{{ s|capitalize }}</div>
+                  <div class="display-4">{{ status_counts[s]|default(0) }}</div>
+                  <div><span class="btn btn-see">Ver {{ s }}</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+        {# === KPIs por Categoria === #}
+        {% set cat_colors = {
+  'Apache':'danger','PHP':'primary','Java':'warning',
+  'Python':'success','Javascript':'info','MySQL':'secondary',
+  'Twig':'secondary','Bootstrap':'primary','Outros':'dark'
+} %}
+
+        {% set cat_icons = {
+          'Apache':'fa-fire','PHP':'fa-code','Java':'fa-coffee',
+          'Python':'fa-python','Javascript':'fa-js','MySQL':'fa-database',
+          'Twig':'fa-leaf','Bootstrap':'fa-bold','Outros':'fa-tags'
+        } %}
+
+        {% for c in cat_options %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/posts?categoria={{ c|url_encode }}" class="text-decoration-none">
+              <div class="card dashboard-card
+                          {% if cat_colors[c]|default('light') == 'light' %}
+                            text-dark
+                          {% else %}
+                            text-white
+                          {% endif %}
+                          bg-gradient-{{ cat_colors[c]|default('light') }} text-center h-100">
+                <span class="icon-bg"><i class="fas {{ cat_icons[c]|default('fa-tags') }}"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">{{ c }}</div>
+                  <div class="display-4">{{ cat_counts[c]|default(0) }}</div>
+                  <div><span class="btn btn-see">Ver {{ c }}</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+        {# === KPI: Posts criados nos últimos 30 dias === #}
+        {% if recent_30_days_count is defined %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/posts?recent_days=30" class="text-decoration-none">
+              <div class="card dashboard-card bg-gradient-primary text-center h-100">
+                <span class="icon-bg"><i class="fas fa-calendar-plus"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">Criados (30 dias)</div>
+                  <div class="display-4">{{ recent_30_days_count }}</div>
+                  <div><span class="btn btn-see">Últimos 30 dias</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      {# === TABELA DE POSTS RECENTES === #}
+      <div class="row">
+        {% include 'Admin/Partials/_recent_table.twig' with {
+  title: 'Posts recentes',
+  icon: 'fas fa-history',
+  url: '/admin/posts',
+  columns: [
+    { label: 'Título', field: 'titulo', link: '/admin/posts/show' },
+    { label: 'Categoria', field: 'categoria' },
+    { label: 'Criado em', field: 'criado_em', align: 'right' }
+  ],
+  rows: recent_posts
+} %}
+
+      </div>
+
+    </div>
+  </section>
+{% endblock %}

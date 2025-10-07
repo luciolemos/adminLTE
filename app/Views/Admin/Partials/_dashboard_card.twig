@@ -1,0 +1,13 @@
+{# Partials/_dashboard_card.twig #}
+<a href="{{ url|default('#') }}" class="text-decoration-none">
+  <div class="card dashboard-card bg-gradient-{{ gradient|default('info') }} text-center h-100">
+    <span class="icon-bg"><i class="{{ icon|default('fas fa-tag') }}"></i></span>
+    <div class="card-body position-relative">
+      <div class="card-title">{{ title|default('Título') }}</div>
+      <div class="display-4">{{ value|default(0) }}</div>
+      {% if btn_text is defined %}
+        <div><span class="btn btn-see">{{ btn_text }}</span></div>
+      {% endif %}
+    </div>
+  </div>
+</a>

@@ -1,0 +1,191 @@
+{# ====================================================================== #}
+{# Admin/Partials/_footer_actions.twig                                   #}
+{# Reutilizável para posts, tools e users                                #}
+{# Inclui botões de ação e suporte a impressão e PDF                     #}
+{# ====================================================================== #}
+
+{% set module_icons = {
+  'posts': 'fas fa-file-alt',
+  'tools': 'fas fa-tools',
+  'users': 'fas fa-user',
+  'categories': 'fas fa-tags',
+  'settings': 'fas fa-cog'
+} %}
+
+{% set module_label = module|capitalize %}
+{% set module_icon = icon|default(module_icons[module]|default('fas fa-folder')) %}
+
+<style>
+  /* =======================
+     AÇÕES DO RODAPÉ (FOOTER)
+     ======================= */
+  .footer-actions {
+    gap: .75rem;
+  }
+
+  .footer-actions > *,
+  .footer-actions form,
+  .footer-actions a,
+  .footer-actions button {
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .footer-actions {
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
+    }
+    .footer-actions > *,
+    .footer-actions form,
+    .footer-actions a,
+    .footer-actions button {
+      width: auto !important;
+    }
+  }
+
+  /* Feedback visual */
+  .footer-actions .btn {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .footer-actions .btn:hover {
+    transform: translateY(-2px);
+  }
+</style>
+
+<div class="card-footer d-flex flex-column footer-actions">
+
+  {# --- Imprimir --- #}
+  {% if show_print %}
+    <button type="button" id="btnPrint" class="btn btn-info">
+      <i class="fas fa-print mr-1"></i> Imprimir
+    </button>
+  {% endif %}
+
+  {# --- PDF --- #}
+  {% if show_pdf %}
+    <button type="button" id="btnPdf" class="btn btn-outline-danger">
+      <i class="fas fa-file-pdf mr-1"></i> PDF
+    </button>
+  {% endif %}
+
+  {# --- Voltar --- #}
+  <a href="/admin/{{ module }}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left mr-1"></i> Voltar
+  </a>
+
+  {# --- Editar --- #}
+  {% if show_edit and entity.id is defined %}
+    <a href="/admin/{{ module }}/edit/{{ entity.id }}?return_to=show"
+       class="btn btn-warning">
+      <i class="fas fa-edit mr-1"></i> Editar
+    </a>
+  {% endif %}
+
+  {# --- Salvar --- #}
+  {% if show_save %}
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-save mr-1"></i> Salvar
+    </button>
+  {% endif %}
+
+  {# --- Cancelar --- #}
+  {% if show_cancel %}
+    <a href="/admin/{{ module }}" class="btn btn-warning">
+      <i class="fas fa-ban mr-1"></i> Cancelar
+    </a>
+  {% endif %}
+
+  {# --- Excluir --- #}
+  {% if show_delete %}
+    {% set can_delete = user_has_permission(module ~ '_delete')|default(true) %}
+    {% if can_delete %}
+      <form method="post"
+            action="{{ delete_url|default('/admin/' ~ module ~ '/delete/' ~ entity.id) }}"
+            onsubmit="return confirm('Excluir este {{ module_label|lower|slice(0, -1) }}?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-danger w-100">
+          <i class="fas fa-trash-alt mr-1"></i> Excluir
+        </button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+</div>
+
+{# ====================================================================== #}
+{# Scripts de Impressão e PDF                                             #}
+{# ====================================================================== #}
+{% if show_print or show_pdf %}
+  {% block footer_actions_scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const area =
+          document.querySelector('.show-card') ||
+          document.querySelector('.card.shadow') ||
+          document.querySelector('.card');
+
+        const btnPrint = document.getElementById('btnPrint');
+        const btnPdf = document.getElementById('btnPdf');
+
+        /* === IMPRESSÃO === */
+        if (btnPrint && area) {
+          btnPrint.addEventListener('click', () => {
+            const img = area.querySelector('img');
+            if (img && !img.complete) {
+              img.addEventListener('load', () => window.print(), { once: true });
+            } else {
+              window.print();
+            }
+          });
+        }
+
+        /* === GERAR PDF === */
+        if (btnPdf && area) {
+          btnPdf.addEventListener('click', async function () {
+            if (!window.jspdf || !window.html2canvas) {
+              alert('Bibliotecas de PDF não carregadas.');
+              return;
+            }
+
+            const jsPDF = window.jspdf.jsPDF;
+
+            try {
+              await new Promise(r => setTimeout(r, 150));
+
+              const canvas = await html2canvas(area, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                windowWidth: document.documentElement.clientWidth
+              });
+
+              const imgData = canvas.toDataURL('image/png');
+              const pdf = new jsPDF('p', 'pt', 'a4');
+
+              const pageW = pdf.internal.pageSize.getWidth();
+              const pageH = pdf.internal.pageSize.getHeight();
+              const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+
+              const pdfW = canvas.width * ratio;
+              const pdfH = canvas.height * ratio;
+
+              const marginX = (pageW - pdfW) / 2;
+              const marginY = 24;
+
+              pdf.addImage(imgData, 'PNG', marginX, marginY, pdfW, pdfH, '', 'FAST');
+              pdf.save('{{ module }}-detalhes-{{ entity.id|default("1") }}.pdf');
+            } catch (e) {
+              console.error('Falha ao gerar PDF:', e);
+              alert('Erro ao gerar PDF. Veja o console para detalhes.');
+            }
+          });
+        }
+      });
+    </script>
+  {% endblock %}
+{% endif %}

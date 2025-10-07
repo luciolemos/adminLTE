@@ -1,0 +1,83 @@
+{# === Estilos globais para páginas de detalhes (show) === #}
+<style>
+  /* ---------- Layout Base ---------- */
+  .show-card {
+    border-radius: .5rem;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  .show-card .card-header {
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .show-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .show-card table th {
+    width: 160px;
+    background-color: #f9fafb;
+    font-weight: 600;
+  }
+
+  .show-card img {
+    border-radius: .25rem;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ---------- Footer Actions ---------- */
+  .card-footer.footer-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: .75rem;
+    padding: 1rem;
+  }
+
+  .footer-actions > *,
+  .footer-actions form,
+  .footer-actions a,
+  .footer-actions button {
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .card-footer.footer-actions {
+      flex-direction: row !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
+    }
+    .footer-actions > *,
+    .footer-actions form,
+    .footer-actions a,
+    .footer-actions button {
+      width: auto !important;
+    }
+  }
+
+  /* ---------- Imprimir ---------- */
+  @media print {
+    .content-header,
+    .card-header,
+    .card-footer,
+    .navbar,
+    .main-footer,
+    .sidebar {
+      display: none !important;
+    }
+
+    .show-card {
+      box-shadow: none !important;
+      border: 0 !important;
+      page-break-inside: avoid;
+    }
+
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>

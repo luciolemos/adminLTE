@@ -34,31 +34,7 @@
     </div>
   </section>
 
-  {# --------- HEADER (Título e Breadcrumb) --------- #}
-  {#
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1><i class="fas fa-users"></i> ferramentas</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            {% for item in breadcrumb %}
-              {% if loop.last or not item.url %}
-                <li class="breadcrumb-item active">{{ item.title }}</li>
-              {% else %}
-                <li class="breadcrumb-item">
-                  <a href="{{ item.url }}">{{ item.title }}</a>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-  #}
+  {# (Header alternativo comentado) #}
 
   <section class="content">
     <div class="container-fluid">
@@ -72,11 +48,11 @@
               </a>
               #}
               <div class="card-tools">
-                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
+                <a href="/admin/tools/dashboard" class="btn btn-tool" title="Dashboard de ferramentas">
                   <i class="fas fa-tachometer-alt"></i>
                 </a>
                 <a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta">
-                  <i class="fas fa-plus"></i>
+                    <i class="fas fa-plus"></i>
                 </a>
                 <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
                   <i class="fas fa-expand"></i>
@@ -363,29 +339,67 @@
         ]
       });
 
-      // Ajustes visuais e tooltips
-      $('.dataTables_length').addClass('justify-content-center d-flex');
-      $('[data-toggle="tooltip"]').tooltip();
-
-      // Filtro por categoria via URL (?cat_tool=)
-      function getUrlParameter (sParam) {
-        let sPageURL = window.location.search.substring(1);
-        let sURLVariables = sPageURL.split('&');
-        let sParameterName;
-
-        for (let i = 0; i < sURLVariables.length; i++) {
-          sParameterName = sURLVariables[i].split('=');
-          if (sParameterName[0] === sParam) {
-            return decodeURIComponent(sParameterName[1]);
+      // -------- Helpers de URL
+      function getUrlParam (name) {
+        const query = window.location.search.substring(1);
+        const parts = query.split('&');
+        for (let i = 0; i < parts.length; i++) {
+          const pair = parts[i].split('=');
+          if (pair[0] === name) {
+            return decodeURIComponent((pair[1] || '').replace(/\+/g, ' '));
           }
         }
-        return false;
+        return '';
       }
 
-      const cat_tool = getUrlParameter('cat_tool');
-      if (cat_tool) {
-        table.column(3).search(cat_tool).draw(); // Coluna CATEGORIA (0=img,1=desc,2=carac,3=cat)
+      // -------- Lê filtros da URL
+      const cat_tool    = getUrlParam('cat_tool');    // coluna 3
+      const type_tool   = getUrlParam('type_tool');   // coluna 4
+      const recent_days = parseInt(getUrlParam('recent_days') || '0', 10); // filtro por data (coluna 5)
+
+      // -------- Filtro customizado por data (dd/mm/yyyy) para recent_days
+      // Só registra o filtro se recent_days > 0
+      let dateFilterIdx = -1;
+      if (recent_days > 0) {
+        const cutoff = new Date();
+        cutoff.setHours(0,0,0,0);
+        cutoff.setDate(cutoff.getDate() - recent_days + 1); // inclui o dia atual no range
+
+        function parseBRDate(dstr) {
+          // espera "dd/mm/yyyy" ou "-"
+          if (!dstr || dstr === '-' ) return null;
+          const m = dstr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+          if (!m) return null;
+          // new Date(yyyy, mm-1, dd)
+          return new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10));
+        }
+
+        // Guarda índice para poder remover depois, se necessário
+        dateFilterIdx = $.fn.dataTable.ext.search.push(function (settings, data) {
+          // data[5] = coluna "DATA AQUISIÇÃO"
+          const d = parseBRDate((data[5] || '').trim());
+          if (!d) return false; // sem data ou formato inválido, esconde
+          d.setHours(0,0,0,0);
+          return d >= cutoff;
+        });
       }
+
+      // -------- Aplica filtros por coluna (categoria/tipo) se vierem na URL
+      // limpa buscas anteriores
+      table.columns().search('');
+
+      if (cat_tool)  table.column(3).search(cat_tool);
+      if (type_tool) table.column(4).search(type_tool);
+
+      // Desenha já com todos os filtros aplicados
+      if (cat_tool || type_tool || recent_days > 0) {
+        table.draw();
+      }
+
+      // -------- UX extra
+      $('.dataTables_length').addClass('justify-content-center d-flex');
+      $('[data-toggle="tooltip"]').tooltip();
     });
   </script>
 {% endblock %}
+

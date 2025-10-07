@@ -4,11 +4,29 @@
 {% block styles %}
   {{ parent() }}
   <style>
-    .card-footer.d-flex .btn, .card-footer.d-flex form { width: 100%; margin-bottom: .5rem; }
-    .card-footer.d-flex form { display: block !important; }
+    .card-footer.d-flex .btn, 
+    .card-footer.d-flex form { 
+      width: 100%; 
+      margin-bottom: .5rem; 
+    }
+
+    .card-footer.d-flex form { 
+      display: block !important; 
+    }
+
     @media (min-width: 768px) {
-      .card-footer.d-flex { flex-direction: row !important; justify-content: flex-end !important; align-items: center !important; gap: .75rem; }
-      .card-footer.d-flex .btn, .card-footer.d-flex form { width: auto !important; margin-bottom: 0 !important; }
+      .card-footer.d-flex { 
+        flex-direction: row !important; 
+        justify-content: flex-end !important; 
+        align-items: center !important; 
+        gap: .75rem; 
+      }
+
+      .card-footer.d-flex .btn, 
+      .card-footer.d-flex form { 
+        width: auto !important; 
+        margin-bottom: 0 !important; 
+      }
     }
   </style>
 {% endblock %}
@@ -20,80 +38,85 @@
       <div class="row mb-2">
         <div class="col-sm-6">
           <h1><i class="fas fa-tools"></i> {{ title }}</h1>
-        </div>
+        </div> {# /.col-sm-6 #}
+
         <div class="col-sm-6">
           {% include 'Partials/_breadcrumb.twig' %}
-        </div>
-      </div>
-    </div>
-  </section>
+        </div> {# /.col-sm-6 #}
+      </div> {# /.row #}
+    </div> {# /.container-fluid #}
+  </section> {# /.content-header #}
 
-<section class="content">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card card-outline shadow">
-         <div class="card-header">
-               <div class="card-tools">
-                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-outline shadow">
+            
+            <div class="card-header">
+              <div class="card-tools">
+                <a href="/admin/tools/dashboard" class="btn btn-tool" title="Dashboard de ferramentas">
                   <i class="fas fa-tachometer-alt"></i>
                 </a>
-                {#<a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta">
+
+                {# <a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta">
                   <i class="fas fa-plus"></i>
-                </a>#}
+                </a> #}
+
                 <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
                   <i class="fas fa-expand"></i>
                 </button>
+
                 <div class="btn-group">
                   <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                     <i class="fas fa-ellipsis-v"></i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    {#<a href="/admin/tools/create" class="dropdown-item">
+                    {# <a href="/admin/tools/create" class="dropdown-item">
                       <i class="fas fa-plus"></i> Nova ferramenta
-                    </a>#}
+                    </a> #}
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item">
                       <i class="fas fa-cog"></i> Configurações
                     </a>
-                  </div>
-                </div>
+                  </div> {# /.dropdown-menu #}
+                </div> {# /.btn-group #}
+
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
                   <i class="fas fa-minus"></i>
                 </button>
-              </div>
-            </div>
+              </div> {# /.card-tools #}
+            </div> {# /.card-header #}
 
-          <div class="card-body">
-            <form method="POST"
-                  enctype="multipart/form-data"
-                  class="needs-validation"
-                  novalidate
-                  autocomplete="off">
+            <div class="card-body">
+              <form 
+                method="POST" 
+                action="?return_to={{ return_to|default('show') }}" 
+                enctype="multipart/form-data" 
+                class="needs-validation" 
+                novalidate 
+                autocomplete="off">
 
-              <div class="pb-5">
-                {% if success %}
-                  <div class="alert alert-success mb-3">{{ success }}</div>
-                {% endif %}
+                <div class="pb-2">
+                  {% include "Admin/Tools/_form.twig" %}
+                </div> {# /.pb-2 #}
 
-                {% if error %}
-                  <div class="alert alert-danger mb-3">{{ error }}</div>
-                {% endif %}
+{% include 'Admin/Partials/_footer_actions.twig' with {
+  module: 'tools',
+  entity: tool,
+  csrf_token: csrf_token,
+  show_save: true,
+  show_cancel: true,
+  show_delete: false
+} %}
 
-                {% include "Admin/Tools/_form.twig" %}
-              </div>
 
-              {% include "Admin/Tools/_footer_actions.twig" with {
-                'show_save': true,
-                'show_cancel': true,
-                'show_delete': false
-              } %}
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+              </form>
+            </div> {# /.card-body #}
 
+          </div> {# /.card #}
+        </div> {# /.col-12 #}
+      </div> {# /.row #}
+    </div> {# /.container-fluid #}
+  </section> {# /.content #}
 {% endblock %}

@@ -1,0 +1,92 @@
+{% extends "layout_admin.twig" %}
+{% block title %}Detalhes do Post{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  {% include 'Admin/Partials/_show_common_styles.twig' %}
+{% endblock %}
+
+{% block content %}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1><i class="fas fa-comments"></i> Detalhes do Post</h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="card show-card shadow" id="postShowCard">
+        <div class="card-header">
+          <div class="card-tools">
+            <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+            </a>
+            <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
+              <i class="fas fa-expand"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-2">Título:</dt>
+            <dd class="col-sm-10">{{ post.titulo }}</dd>
+
+            <dt class="col-sm-2">Categoria:</dt>
+            <dd class="col-sm-10">{{ post.categoria }}</dd>
+
+            <dt class="col-sm-2">Status:</dt>
+            <dd class="col-sm-10">
+              {% if post.status == 'publicado' %}
+                <span class="badge badge-success">Publicado</span>
+              {% else %}
+                <span class="badge badge-secondary">Rascunho</span>
+              {% endif %}
+            </dd>
+
+            <dt class="col-sm-2">Autor:</dt>
+            <dd class="col-sm-10">{{ post.autor_nome }}</dd>
+
+            <dt class="col-sm-2">Criado em:</dt>
+            <dd class="col-sm-10">{{ post.criado_em|date('d/m/Y H:i') }}</dd>
+
+            <dt class="col-sm-2">Conteúdo:</dt>
+            <dd class="col-sm-10">
+              <div class="border rounded p-3 bg-light">{{ post.conteudo|raw }}</div>
+            </dd>
+
+            <dt class="col-sm-2">Imagem:</dt>
+            <dd class="col-sm-10">
+              {% if post.imagem %}
+                <img src="{{ post.imagem }}" alt="Imagem" class="img-fluid rounded shadow-sm">
+              {% else %}
+                <span class="text-muted">Sem imagem</span>
+              {% endif %}
+            </dd>
+          </dl>
+        </div>
+
+        {% include 'Admin/Partials/_footer_actions.twig' with {
+          module: 'posts',
+          entity: post,
+          csrf_token: csrf_token,
+          show_print: true,
+          show_pdf: true,
+          show_edit: true,
+          show_delete: true,
+          show_cancel: true
+        } %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

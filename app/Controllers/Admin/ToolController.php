@@ -9,11 +9,12 @@ use App\Models\Tool;
  * Protege todas as rotas para acesso apenas de administradores.
  *
  * Métodos:
- *  - index()   : Lista todas as ferramentas
- *  - create()  : Formulário + processamento de criação
- *  - edit($id) : Formulário + processamento de edição
+ *  - dashboard(): KPIs/visão geral (cards) das ferramentas
+ *  - index()    : Lista todas as ferramentas
+ *  - create()   : Formulário + processamento de criação
+ *  - edit($id)  : Formulário + processamento de edição
  *  - delete($id): Exclui uma ferramenta
- *  - show($id) : Visualiza detalhes de uma ferramenta
+ *  - show($id)  : Visualiza detalhes de uma ferramenta
  */
 class ToolController extends Controller
 {
@@ -30,6 +31,67 @@ class ToolController extends Controller
         }
     }
 
+/**
+     * Dashboard de Ferramentas (cards/kpis + tabela recentes).
+     */
+    public function dashboard()
+    {
+        $this->authorize();
+
+        $toolModel = new Tool();
+
+        // Totais gerais
+        $total_tools = $toolModel->countAll();
+
+        // Por tipo
+        $type_options = ['Nova', 'Usada', 'Restaurada', 'Danificada'];
+        $type_counts  = [];
+        foreach ($type_options as $t) {
+            $type_counts[$t] = $toolModel->countByType($t);
+        }
+
+        // Por categoria
+        $cat_options = [
+            'Ferramentas elétricas',
+            'Ferramentas hidráulicas',
+            'Ferramentas de marcenaria',
+            'Ferramentas de corte',
+            'Ferramentas de medição',
+            'Outras'
+        ];
+        $cat_counts = [];
+        foreach ($cat_options as $c) {
+            $cat_counts[$c] = $toolModel->countByCategory($c);
+        }
+
+        // KPIs adicionais
+        $recent_30_days_count = $toolModel->countAcquiredLastDays(30);
+        $damaged_count        = $toolModel->countByType('Danificada');
+
+        // Ferramentas recentes (widget)
+        $recent_tools = $toolModel->getRecentAcquired(5);
+
+        $breadcrumb = [
+            ['title' => 'Dashboard',   'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas', 'url' => '/admin/tools'],
+            ['title' => 'Visão geral', 'url' => null],
+        ];
+
+        return $this->render('Admin/Tools/dashboard', [
+            'title'                => 'Dashboard de Ferramentas',
+            'user'                 => $_SESSION['user'],
+            'breadcrumb'           => $breadcrumb,
+            'total_tools'          => $total_tools,
+            'type_options'         => $type_options,
+            'type_counts'          => $type_counts,
+            'cat_options'          => $cat_options,
+            'cat_counts'           => $cat_counts,
+            'recent_30_days_count' => $recent_30_days_count,
+            'damaged_count'        => $damaged_count,
+            'recent_tools'         => $recent_tools, // <-- agora passando para a view
+        ]);
+    }
+
     /**
      * Lista todas as ferramentas cadastradas.
      * Exibe a tela index.twig.
@@ -41,8 +103,23 @@ class ToolController extends Controller
         $toolModel = new Tool();
         $tools = $toolModel->getAll();
 
+            $type   = $_GET['type_tool']   ?? null;
+    $cat    = $_GET['cat_tool']    ?? null;
+    $recent = $_GET['recent_days'] ?? null;
+
+    if ($type) {
+        $tools = $toolModel->getByType($type);
+    } elseif ($cat) {
+        $tools = $toolModel->getByCategory($cat);
+    } elseif ($recent) {
+        $tools = $toolModel->getAcquiredLastDays((int) $recent);
+    } else {
+        $tools = $toolModel->getAll();
+    }
+
+
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['title' => 'Dashboard',   'url' => '/admin/dashboard'],
             ['title' => 'Ferramentas', 'url' => null],
         ];
 
@@ -95,8 +172,8 @@ class ToolController extends Controller
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Ferramentas', 'url' => '/admin/tools'],
+            ['title' => 'Dashboard',    'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas',  'url' => '/admin/tools'],
             ['title' => 'Nova ferramenta', 'url' => null],
         ];
 
@@ -163,8 +240,8 @@ class ToolController extends Controller
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Ferramentas', 'url' => '/admin/tools'],
+            ['title' => 'Dashboard',    'url' => '/admin/dashboard'],
+            ['title' => 'Ferramentas',  'url' => '/admin/tools'],
             ['title' => 'Editar ferramenta', 'url' => null],
         ];
 
@@ -222,9 +299,9 @@ class ToolController extends Controller
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['title' => 'Dashboard',   'url' => '/admin/dashboard'],
             ['title' => 'Ferramentas', 'url' => '/admin/tools'],
-            ['title' => 'Detalhes', 'url' => null],
+            ['title' => 'Detalhes',    'url' => null],
         ];
 
         return $this->render('Admin/Tools/show', [

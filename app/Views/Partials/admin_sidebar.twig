@@ -1,19 +1,29 @@
 {% import "Partials/macros.twig" as macros %}
+
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-  <!-- Brand Logo -->
+
+  {# --------- LOGO / BRAND --------- #}
   <a href="/admin/dashboard" class="brand-link">
-    <img src="/assets/adminlte/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <img src="/assets/adminlte/dist/img/AdminLTELogo.png"
+         alt="AdminLTE Logo"
+         class="brand-image img-circle elevation-3"
+         style="opacity:.8">
     <span class="brand-text font-weight-light">AdminLTE 3</span>
   </a>
+
   <div class="sidebar">
+
+    {# --------- PAINEL DO USUÁRIO --------- #}
     {% if user %}
       <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
+        <!-- Avatar -->
         <div class="image">
           <img src="{{ user.avatar ?: '/assets/adminlte/dist/img/avatar.png' }}"
                class="img-circle elevation-2 user-avatar"
                alt="Avatar"
                style="width:38px; height:38px; object-fit:cover;">
         </div>
+        <!-- Nome + Cargo -->
         <div class="info ml-2">
           <a href="/admin/users/show/{{ user.id }}" class="d-block">
             <span class="text-white">
@@ -24,43 +34,160 @@
         </div>
       </div>
     {% endif %}
+
+    {# --------- MENU DE NAVEGAÇÃO --------- #}
     <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-        <li class="nav-item">
-          <a href="/" class="nav-link{% if current_path == '/' %} active{% endif %}">
+      <ul class="nav nav-pills nav-sidebar flex-column"
+          data-widget="treeview"
+          role="menu">
+
+        {# --------- LINK: Home --------- #}
+        <li class="nav-item highlight-home">
+          <a href="/"
+             class="nav-link{% if current_path == '/' %} active{% endif %}">
             <i class="nav-icon fas fa-home"></i>
             <p>Home</p>
           </a>
         </li>
+
         {% if user and user.cargo == 'Admin' %}
-          <li class="nav-item">
-            <a href="/admin/dashboard" class="nav-link{% if current_path == '/admin/dashboard' %} active{% endif %}">
+
+          {# --------- LINK: Dashboard Principal --------- #}
+          <li class="nav-item highlight-dashboard">
+            <a href="/admin/dashboard"
+               class="nav-link{% if current_path == '/admin/dashboard' %} active{% endif %}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>Dashboard</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="/admin/users" class="nav-link{% if current_path starts with '/admin/users' %} active{% endif %}">
+
+          
+
+          {# --------- GRUPO: Usuários --------- #}
+          <li class="nav-item has-treeview highlight-users {% if current_path starts with '/admin/users' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/users' %}active{% endif %}">
               <i class="nav-icon fas fa-users"></i>
-              <p>Usuários</p>
+              <p>
+                Usuários
+                <i class="right fas fa-angle-left"></i>
+              </p>
             </a>
+            <ul class="nav nav-treeview">
+              <!-- Listar -->
+              <li class="nav-item">
+                <a href="/admin/users"
+                   class="nav-link{% if current_path == '/admin/users' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <!-- Novo -->
+              <li class="nav-item">
+                <a href="/admin/users/create"
+                   class="nav-link{% if current_path == '/admin/users/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Novo</p>
+                </a>
+              </li>
+              <!-- Dashboard Usuários -->
+              <li class="nav-item">
+                <a href="/admin/users/dashboard"
+                   class="nav-link{% if current_path == '/admin/users/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a href="/admin/posts" class="nav-link{% if current_path starts with '/admin/posts' %} active{% endif %}">
-              <i class="nav-icon fas fa-comments"></i>
-              <p>Posts</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="/admin/tools" class="nav-link{% if current_path starts with '/admin/tools' %} active{% endif %}">
+
+          
+
+          {# --------- GRUPO: Ferramentas --------- #}
+          <li class="nav-item has-treeview highlight-tools {% if current_path starts with '/admin/tools' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/tools' %}active{% endif %}">
               <i class="nav-icon fas fa-tools"></i>
-              <p>Ferramentas</p>
+              <p>
+                Ferramentas
+                <i class="right fas fa-angle-left"></i>
+              </p>
             </a>
+            <ul class="nav nav-treeview">
+              <!-- Listar -->
+              <li class="nav-item">
+                <a href="/admin/tools"
+                   class="nav-link{% if current_path == '/admin/tools' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <!-- Nova -->
+              <li class="nav-item">
+                <a href="/admin/tools/create"
+                   class="nav-link{% if current_path == '/admin/tools/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Nova</p>
+                </a>
+              </li>
+              <!-- Dashboard Ferramentas -->
+              <li class="nav-item">
+                <a href="/admin/tools/dashboard"
+                   class="nav-link{% if current_path == '/admin/tools/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
           </li>
-          {# --- Menu Documentação (Dropdown) --- #}
-          <li class="nav-item has-treeview{% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %} menu-open{% endif %}">
-            <a href="#" class="nav-link{% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %} active{% endif %}">
-              <i class="nav-icon fas fa-folder"></i>
+
+          
+
+          {# --------- GRUPO: Posts --------- #}
+          <li class="nav-item has-treeview highlight-posts {% if current_path starts with '/admin/posts' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/posts' %}active{% endif %}">
+              <i class="nav-icon fas fa-comments"></i>
+              <p>
+                Posts
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <!-- Listar -->
+              <li class="nav-item">
+                <a href="/admin/posts"
+                   class="nav-link{% if current_path == '/admin/posts' %} active{% endif %}">
+                  <i class="far fa-list-alt nav-icon"></i>
+                  <p>Listar</p>
+                </a>
+              </li>
+              <!-- Novo -->
+              <li class="nav-item">
+                <a href="/admin/posts/create"
+                   class="nav-link{% if current_path == '/admin/posts/create' %} active{% endif %}">
+                  <i class="far fa-plus-square nav-icon"></i>
+                  <p>Novo</p>
+                </a>
+              </li>
+              <!-- Dashboard de Posts -->
+              <li class="nav-item">
+                <a href="/admin/posts/dashboard"
+                   class="nav-link{% if current_path == '/admin/posts/dashboard' %} active{% endif %}">
+                  <i class="fas fa-tachometer-alt nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          
+
+          {# --------- GRUPO: Documentação --------- #}
+          <li class="nav-item has-treeview highlight-docs {% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/caracteristicas' or current_path starts with '/admin/estrutura' or current_path starts with '/admin/composer' or current_path starts with '/admin/documentacao' or current_path starts with '/admin/datatable' %} active{% endif %}">
+              <i class="nav-icon fas fa-folder-open"></i>
               <p>
                 Documentação
                 <i class="right fas fa-angle-left"></i>
@@ -68,41 +195,50 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/admin/caracteristicas" class="nav-link{% if current_path == '/admin/caracteristicas' %} active{% endif %}">
-                  <i class="fas fa-tools nav-icon"></i>
+                <a href="/admin/caracteristicas"
+                   class="nav-link{% if current_path == '/admin/caracteristicas' %} active{% endif %}">
+                   <i class="nav-icon fas fa-file-alt"></i>
                   <p>Características</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/estrutura" class="nav-link{% if current_path == '/admin/estrutura' %} active{% endif %}">
-                  <i class="fas fa-network-wired nav-icon"></i>
+                <a href="/admin/estrutura"
+                   class="nav-link{% if current_path == '/admin/estrutura' %} active{% endif %}">
+                   <i class="nav-icon fas fa-file-alt"></i>
                   <p>Estrutura</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/composer" class="nav-link{% if current_path == '/admin/composer' %} active{% endif %}">
-                  <i class="fas fa-file-code nav-icon"></i>
+                <a href="/admin/composer"
+                   class="nav-link{% if current_path == '/admin/composer' %} active{% endif %}">
+                   <i class="nav-icon fas fa-file-alt"></i>
                   <p>Composer</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/documentacao" class="nav-link{% if current_path == '/admin/documentacao' %} active{% endif %}">
-                  <i class="nav-icon fas fa-book"></i>
+                <a href="/admin/documentacao"
+                   class="nav-link{% if current_path == '/admin/documentacao' %} active{% endif %}">
+                  <i class="nav-icon fas fa-file-alt"></i>
                   <p>.htaccess / Virtual host</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/datatable" class="nav-link{% if current_path == '/admin/datatable' %} active{% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
+                <a href="/admin/datatable"
+                   class="nav-link{% if current_path == '/admin/datatable' %} active{% endif %}">
+                   <i class="nav-icon fas fa-file-alt"></i>
                   <p>Datatable</p>
                 </a>
               </li>
             </ul>
           </li>
-          {# --- Menu Gráficos (Dropdown) --- #}
-          <li class="nav-item has-treeview{% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %} menu-open{% endif %}">
-            <a href="#" class="nav-link{% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %} active{% endif %}">
-              <i class="nav-icon fas fa-folder"></i>
+
+          
+
+          {# --------- GRUPO: Gráficos --------- #}
+          <li class="nav-item has-treeview highlight-charts {% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %}menu-open{% endif %}">
+            <a href="#"
+               class="nav-link {% if current_path starts with '/admin/status' or current_path starts with '/admin/cargos/pie' or current_path starts with '/admin/usuarios-por-mes' or current_path starts with '/admin/chartbar' %} active{% endif %}">
+              <i class="fas fa-chart-pie nav-icon"></i>
               <p>
                 Gráficos
                 <i class="right fas fa-angle-left"></i>
@@ -110,45 +246,51 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/admin/status/bar" class="nav-link{% if current_path == '/admin/status/bar' %} active{% endif %}">
+                <a href="/admin/status/bar"
+                   class="nav-link{% if current_path == '/admin/status/bar' %} active{% endif %}">
                   <i class="fas fa-chart-bar nav-icon"></i>
                   <p>Status bar</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/status/doughnut" class="nav-link{% if current_path == '/admin/status/doughnut' %} active{% endif %}">
+                <a href="/admin/status/doughnut"
+                   class="nav-link{% if current_path == '/admin/status/doughnut' %} active{% endif %}">
                   <i class="fas fa-chart-area nav-icon"></i>
                   <p>Status doughnut</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/status/pie" class="nav-link{% if current_path == '/admin/status/pie' %} active{% endif %}">
+                <a href="/admin/status/pie"
+                   class="nav-link{% if current_path == '/admin/status/pie' %} active{% endif %}">
                   <i class="fas fa-chart-area nav-icon"></i>
                   <p>Status pie</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/cargos/pie" class="nav-link{% if current_path == '/admin/cargos/pie' %} active{% endif %}">
+                <a href="/admin/cargos/pie"
+                   class="nav-link{% if current_path == '/admin/cargos/pie' %} active{% endif %}">
                   <i class="fas fa-chart-pie nav-icon"></i>
                   <p>Cargos pie</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/usuarios-por-mes" class="nav-link{% if current_path == '/admin/usuarios-por-mes' %} active{% endif %}">
+                <a href="/admin/usuarios-por-mes"
+                   class="nav-link{% if current_path == '/admin/usuarios-por-mes' %} active{% endif %}">
                   <i class="fas fa-chart-line nav-icon"></i>
                   <p>Linha</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/admin/chartbar" class="nav-link{% if current_path == '/admin/chartbar' %} active{% endif %}">
+                <a href="/admin/chartbar"
+                   class="nav-link{% if current_path == '/admin/chartbar' %} active{% endif %}">
                   <i class="fas fa-chart-bar nav-icon"></i>
                   <p>Gráfico de barras</p>
                 </a>
               </li>
             </ul>
           </li>
+
         {% endif %}
-        {# Outros menus podem ser adicionados aqui #}
       </ul>
     </nav>
   </div>

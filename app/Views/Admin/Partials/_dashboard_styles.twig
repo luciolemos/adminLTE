@@ -1,0 +1,157 @@
+{# Fonte Inter para tipografia global #}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+  /* =======================================================
+     VARIÁVEIS DE GRADIENTES
+     ======================================================= */
+  :root {
+    --grad-info:      linear-gradient(135deg,#2193b0 0%,#6dd5ed 100%);
+    --grad-success:   linear-gradient(135deg,#56ab2f 0%,#a8e063 100%);
+    --grad-warning:   linear-gradient(135deg,#f7971e 0%,#ffd200 100%);
+    --grad-danger:    linear-gradient(135deg,#ee0979 0%,#ff6a00 100%);
+    --grad-secondary: linear-gradient(135deg,#485563 0%,#29323c 100%);
+    --grad-primary:   linear-gradient(135deg,#396afc 0%,#2948ff 100%);
+    --grad-light:     linear-gradient(135deg,#f8ffae 0%,#43c6ac 100%);
+  }
+
+  /* =======================================================
+     CARDS KPI (Dashboard)
+     ======================================================= */
+  .dashboard-card {
+    border: none;
+    border-radius: 1.4rem;
+    font-family: 'Inter', Arial, sans-serif;
+    transition: transform .17s cubic-bezier(.4,2,.6,1),
+                box-shadow .18s,
+                filter .18s;
+    box-shadow: 0 2px 12px rgba(60,60,120,.10);
+    position: relative;
+    overflow: hidden;
+    min-height: 154px;
+    cursor: pointer;
+    background: var(--grad-info);
+    color: #fff;
+    filter: brightness(.98);
+  }
+
+  /* Paleta de gradientes aplicáveis */
+  .dashboard-card.bg-gradient-info      { background: var(--grad-info); }
+  .dashboard-card.bg-gradient-success   { background: var(--grad-success); }
+  .dashboard-card.bg-gradient-warning   { background: var(--grad-warning); color: #423d00; }
+  .dashboard-card.bg-gradient-danger    { background: var(--grad-danger); }
+  .dashboard-card.bg-gradient-secondary { background: var(--grad-secondary); }
+  .dashboard-card.bg-gradient-primary   { background: var(--grad-primary); }
+  .dashboard-card.bg-gradient-light     { background: var(--grad-light); color: #222; }
+
+  /* Ícone de fundo (canto inferior direito) */
+  .dashboard-card .icon-bg {
+    position: absolute;
+    right: 1.2rem;
+    bottom: 1.1rem;
+    font-size: 3.7rem;
+    opacity: .15;
+    line-height: 1;
+    filter: blur(1px);
+    pointer-events: none;
+  }
+
+  /* Número principal (centralizado no card) */
+  .dashboard-card .display-4 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(10,20,60,.09);
+  }
+  .dashboard-card.bg-gradient-light .display-4 { color: #333; }
+
+  /* Título do card */
+  .dashboard-card .card-title {
+    margin-bottom: .45rem;
+    font-size: 1.06rem;
+    font-weight: 500;
+    letter-spacing: .5px;
+    color: #fff;
+    opacity: .96;
+    text-shadow: 0 1px 2px rgba(0,0,0,.09);
+  }
+  .dashboard-card.bg-gradient-warning .card-title { color: #423d00; }
+  .dashboard-card.bg-gradient-light   .card-title { color: #2c3e50; }
+
+  /* Botão interno (fixo no canto inferior esquerdo) */
+  .dashboard-card .btn-see {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    font-size: .95rem;
+    font-weight: 500;
+    color: #eaf6ff;
+    background: rgba(0,0,0,.10);
+    border: none;
+    border-radius: 1rem;
+    padding: 4px 14px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background .11s, color .09s, filter .11s;
+  }
+  .dashboard-card .btn-see:hover {
+    background: rgba(255,255,255,.16);
+    color: #fff;
+    filter: brightness(1.08);
+  }
+
+  /* Hover do card */
+  .dashboard-card:hover {
+    transform: translateY(-7px) scale(1.028);
+    box-shadow: 0 10px 40px rgba(44,128,224,.14),
+                0 1.5px 8px rgba(30,40,60,.12);
+    z-index: 3;
+    filter: brightness(1.03) saturate(1.08);
+  }
+
+  /* =======================================================
+     RESPONSIVIDADE
+     ======================================================= */
+  @media (max-width:575px) {
+    .dashboard-card { min-height: 110px; }
+    .dashboard-card .icon-bg { font-size: 1.7rem; top: .7rem; right: .7rem; }
+    .dashboard-card .display-4 { font-size: 1.3rem; }
+  }
+
+  /* =======================================================
+     AJUSTES GLOBAIS
+     ======================================================= */
+  .content-header .row { align-items: center; }
+  .card .card-header   { padding: .75rem 1rem; }
+  .card .card-body     { padding: 1rem 1.25rem; }
+  .card .card-footer   { padding: .75rem 1rem; }
+
+  /* Tabelas compactas */
+  .table-sm td, .table-sm th { padding: .5rem .6rem; }
+
+  /* Botões de filtros rápidos */
+  .quick-filters .btn { border-radius: 999px; }
+  .quick-filters .btn i { margin-right: .35rem; }
+
+  /* Widget saúde do sistema */
+  .sys-health .progress { height: .6rem; }
+  .sys-health .badge { font-weight: 600; }
+
+  /* Efeito skeleton (carregamento animado) */
+  .skeleton {
+    background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%);
+    background-size: 400% 100%;
+    animation: shine 1.2s ease-in-out infinite;
+    border-radius: .4rem;
+  }
+  @keyframes shine {
+    0%   { background-position: 100% 0 }
+    100% { background-position: 0 0 }
+  }
+</style>

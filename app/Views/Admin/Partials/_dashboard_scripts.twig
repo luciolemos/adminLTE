@@ -1,0 +1,24 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const chartsConfig = {{ charts|default({})|json_encode|raw }};
+
+    Object.keys(chartsConfig).forEach(chartId => {
+      const cfg = chartsConfig[chartId];
+      const ctx = document.getElementById(chartId);
+      if (ctx) {
+        new Chart(ctx, {
+          type: cfg.type || 'doughnut',
+          data: {
+            labels: Object.keys(cfg.data || {}),
+            datasets: [{ data: Object.values(cfg.data || {}) }]
+          },
+          options: {
+            plugins: { legend: { position: 'bottom' } },
+            cutout: cfg.cutout || (cfg.type === 'doughnut' ? '60%' : undefined)
+          }
+        });
+      }
+    });
+  });
+</script>

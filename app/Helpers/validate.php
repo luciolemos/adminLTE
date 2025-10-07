@@ -97,7 +97,7 @@ function validate_tool_categoria($cat) {
     $valid = [
         'Ferramentas elétricas',
         'Ferramentas hidráulicas',
-        'Ferramentas de carpintaria e marcenaria',
+        'Ferramentas de marcenaria',
         'Ferramentas de corte',
         'Ferramentas de medição',
         'Outras'

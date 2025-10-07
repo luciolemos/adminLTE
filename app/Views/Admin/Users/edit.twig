@@ -57,11 +57,15 @@
                 <div class="pb-2">
                   {% include "Admin/Users/_form.twig" %}
                 </div>
-                {% include "Admin/Users/_footer_actions.twig" with {
-                  'show_save': true,
-                  'show_cancel': true,
-                  'show_delete': false
-                } %}
+{% include 'Admin/Partials/_footer_actions.twig' with {
+  module: 'users',
+  entity: usuario,
+  csrf_token: csrf_token,
+  show_save: true,
+  show_cancel: true,
+  show_delete: user_has_permission('user_delete')
+} %}
+
               </form>
             </div>
 

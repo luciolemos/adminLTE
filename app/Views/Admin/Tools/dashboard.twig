@@ -1,0 +1,175 @@
+{# Extende o layout principal do admin (contém <html>, <head>, navbar, sidebar etc.) #}
+{% extends "layout_admin.twig" %}
+
+{# Título da página (aba do navegador) #}
+{% block title %}Dashboard de ferramentas{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  {% include 'Admin/Partials/_dashboard_styles.twig' %}
+{% endblock %}
+
+{% block content %}
+  {# --------- HEADER --------- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>
+            <i class="fas fa-tachometer-alt"></i> {{ title }}
+          </h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# --------- CONTEÚDO PRINCIPAL --------- #}
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+
+        {# === Card: Total de Ferramentas === #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          <a href="/admin/tools" class="text-decoration-none">
+            <div class="card dashboard-card bg-gradient-info text-center h-100">
+              <span class="icon-bg"><i class="fas fa-tools"></i></span>
+              <div class="card-body position-relative">
+                <div class="card-title">Total Ferramentas</div>
+                <div class="display-4">{{ total_tools|default(0) }}</div>
+                <div><span class="btn btn-see">Ver todas</span></div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        {# === Cards por Tipo de Ferramenta === #}
+        {% set type_colors = {
+          'Nova':'success',
+          'Usada':'primary',
+          'Restaurada':'warning',
+          'Danificada':'danger'
+        } %}
+        {% set type_icons = {
+          'Nova':'fa-star',
+          'Usada':'fa-recycle',
+          'Restaurada':'fa-tools',
+          'Danificada':'fa-wrench'
+        } %}
+        {% set type_options = type_options|default(['Nova','Usada','Restaurada','Danificada']) %}
+
+        {% for t in type_options %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/tools?type_tool={{ t }}" class="text-decoration-none">
+              <div class="card dashboard-card bg-gradient-{{ type_colors[t]|default('secondary') }} text-center h-100">
+                <span class="icon-bg"><i class="fas {{ type_icons[t]|default('fa-tag') }}"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">{{ t }}</div>
+                  <div class="display-4">{{ type_counts[t]|default(0) }}</div>
+                  <div><span class="btn btn-see">Ver {{ t|lower }}</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+        {# === Cards por Categoria === #}
+        {% set cat_colors = {
+          'Ferramentas elétricas'   : 'primary',
+          'Ferramentas hidráulicas' : 'info',
+          'Ferramentas de marcenaria': 'warning',
+          'Ferramentas de corte'    : 'danger',
+          'Ferramentas de medição'  : 'success',
+          'Outras'                  : 'secondary'
+        } %}
+        {% set cat_icons = {
+          'Ferramentas elétricas'   : 'fa-bolt',
+          'Ferramentas hidráulicas' : 'fa-water',
+          'Ferramentas de marcenaria': 'fa-hammer',
+          'Ferramentas de corte'    : 'fa-cut',
+          'Ferramentas de medição'  : 'fa-ruler-combined',
+          'Outras'                  : 'fa-toolbox'
+        } %}
+        {% set cat_options = cat_options|default([
+          'Ferramentas elétricas',
+          'Ferramentas hidráulicas',
+          'Ferramentas de marcenaria',
+          'Ferramentas de corte',
+          'Ferramentas de medição',
+          'Outras'
+        ]) %}
+
+        {% for c in cat_options %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/tools?cat_tool={{ c|url_encode }}" class="text-decoration-none">
+              <div class="card dashboard-card
+                          {% if cat_colors[c]|default('light') == 'light' %}
+                            text-dark
+                          {% else %}
+                            text-white
+                          {% endif %}
+                          bg-gradient-{{ cat_colors[c]|default('light') }} text-center h-100">
+                <span class="icon-bg"><i class="fas {{ cat_icons[c]|default('fa-tags') }}"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">{{ c }}</div>
+                  <div class="display-4">{{ cat_counts[c]|default(0) }}</div>
+                  <div><span class="btn btn-see">Ver {{ c|lower }}</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+        {# === KPI: Ferramentas adquiridas nos últimos 30 dias === #}
+        {% if recent_30_days_count is defined %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/tools?recent_days=30" class="text-decoration-none">
+              <div class="card dashboard-card bg-gradient-primary text-center h-100">
+                <span class="icon-bg"><i class="fas fa-calendar-plus"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">Adquiridas (30 dias)</div>
+                  <div class="display-4">{{ recent_30_days_count }}</div>
+                  <div><span class="btn btn-see">Últimos 30 dias</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endif %}
+
+        {# === KPI: Ferramentas Danificadas === #}
+        {% if damaged_count is defined %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/tools?type_tool=Danificada" class="text-decoration-none">
+              <div class="card dashboard-card bg-gradient-danger text-center h-100">
+                <span class="icon-bg"><i class="fas fa-exclamation-triangle"></i></span>
+                <div class="card-body position-relative">
+                  <div class="card-title">Danificadas</div>
+                  <div class="display-4">{{ damaged_count }}</div>
+                  <div><span class="btn btn-see">Ver danificadas</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      {# === TABELA DE FERRAMENTAS RECENTES === #}
+      <div class="row">
+        {% include 'Admin/Partials/_recent_table.twig' with {
+          title: 'Ferramentas recentes',
+          icon: 'fas fa-history',
+          url: '/admin/tools',
+          columns: [
+            { label: 'Descrição', field: 'desc_tool', link: '/admin/tools/show' },
+            { label: 'Categoria', field: 'cat_tool' },
+            { label: 'Aquisição', field: 'data_aquisicao', align: 'right' }
+          ],
+          rows: recent_tools
+        } %}
+      </div>
+
+    </div>
+  </section>
+{% endblock %}

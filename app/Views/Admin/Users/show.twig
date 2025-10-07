@@ -1,6 +1,6 @@
 {% extends "layout_admin.twig" %}
 {% import "Partials/macros.twig" as macros %}
-{% block title %}Visualizar{% endblock %}
+{% block title %}Detalhes do Usuário{% endblock %}
 
 {% block styles %}
   {{ parent() }}
@@ -75,8 +75,10 @@
                     <img
                       src="{{ usuario.avatar|default('/assets/adminlte/dist/img/avatar7.png') }}"
                       alt="Avatar"
-                      class="rounded-circle border shadow-sm mb-3 mb-md-0"
-                      style="width:130px; height:130px; object-fit:cover;">
+                      {#class="rounded-circle border shadow-sm mb-3 mb-md-0"#}
+                      {#class="border border-primary shadow-sm mb-3 mb-md-0"#}
+                      class="rounded shadow border border-primary"
+                      style="width:256px; height:256px; object-fit:cover;">
                       
                     <div class="ml-md-4 text-center text-md-left">
                       <h4 class="mb-1">{{ usuario.nome }}</h4>
@@ -130,12 +132,18 @@
               </div>
             </div>
             <div>
-          {% include "Admin/Users/_footer_actions.twig" with {
-          'show_save': false,
-          'show_cancel': false,
-          'show_delete': false,
-          'show_edit': true
-          } %}             
+            
+{% include 'Admin/Partials/_footer_actions.twig' with {
+  module: 'users',
+  entity: usuario,
+  csrf_token: csrf_token, 
+  show_print: true,
+  show_pdf: true,
+  show_edit: true,
+  show_delete: true,
+  show_cancel: true
+} %}
+            
             </div>
           </div>
         </div>

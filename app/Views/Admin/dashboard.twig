@@ -1,180 +1,248 @@
+{# 
+  O layout base que todo painel de administração herda. 
+  Ele deve conter a estrutura HTML principal (head, body, navbar, sidebar, footer).
+#}
 {% extends "layout_admin.twig" %}
-{% block title %}Dashboard{% endblock %}
-{% block content %}
-{% block styles %}
-<style>
-:root {
-  --grad-info: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
-  --grad-success: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-  --grad-warning: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
-  --grad-danger: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-  --grad-secondary: linear-gradient(135deg, #485563 0%, #29323c 100%);
-  --grad-primary: linear-gradient(135deg, #396afc 0%, #2948ff 100%);
-  --grad-light: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);
-}
 
-.dashboard-card {
-  border: none;
-  border-radius: 1.4rem;
-  font-family: 'Inter', Arial, sans-serif;
-  transition: transform 0.17s cubic-bezier(.4,2,.6,1), box-shadow 0.18s, filter 0.18s;
-  box-shadow: 0 2px 12px rgba(60, 60, 120, 0.10);
-  position: relative;
-  overflow: hidden;
-  min-height: 154px;
-  cursor: pointer;
-  background: var(--grad-info);
-  color: #fff;
-  filter: brightness(.98);
-}
-.dashboard-card.bg-gradient-info      { background: var(--grad-info); }
-.dashboard-card.bg-gradient-success   { background: var(--grad-success);}
-.dashboard-card.bg-gradient-warning   { background: var(--grad-warning); color:#423d00;}
-.dashboard-card.bg-gradient-danger    { background: var(--grad-danger);}
-.dashboard-card.bg-gradient-secondary { background: var(--grad-secondary);}
-.dashboard-card.bg-gradient-primary   { background: var(--grad-primary);}
-.dashboard-card.bg-gradient-light     { background: var(--grad-light); color: #222; }
-.dashboard-card .icon-bg {
-  position: absolute;
-  right: 1.2rem;
-  top: 1.1rem;
-  font-size: 3.7rem;
-  opacity: 0.15;
-  pointer-events: none;
-  line-height: 1;
-  filter: blur(1px);
-}
-.dashboard-card .display-4 {
-  font-size: 2.3rem;
-  font-weight: 800;
-  margin-bottom: 0.1rem;
-  color: #fff;
-  text-shadow: 0 2px 6px rgba(10,20,60,0.09);
-  letter-spacing: -1px;
-}
-.dashboard-card.bg-gradient-light .display-4 { color: #333; }
-.dashboard-card .card-title {
-  margin-bottom: 0.45rem;
-  font-size: 1.06rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.09);
-  color: #fff;
-  opacity:.96;
-}
-.dashboard-card.bg-gradient-warning .card-title { color: #423d00;}
-.dashboard-card.bg-gradient-light .card-title   { color: #2c3e50;}
-.dashboard-card .btn-see {
-  margin-top: 0.15rem;
-  font-size: .99rem;
-  color: #eaf6ff;
-  background: rgba(0,0,0,0.10);
-  border: none;
-  border-radius: 1rem;
-  transition: background 0.11s, color 0.09s;
-  padding: 2px 17px;
-  font-weight: 500;
-  box-shadow: none;
-}
-.dashboard-card .btn-see:hover {
-  background: rgba(255,255,255,0.16);
-  color: #fff;
-  filter: brightness(1.1);
-}
-.dashboard-card:hover {
-  transform: translateY(-7px) scale(1.028);
-  box-shadow: 0 10px 40px 0 rgba(44,128,224,0.14), 0 1.5px 8px rgba(30,40,60,.12);
-  z-index: 3;
-  filter: brightness(1.03) saturate(1.09);
-  animation: pop-card .22s;
-}
-@keyframes pop-card {
-  0%   { transform: scale(1);}
-  70%  { transform: scale(1.035);}
-  100% { transform: scale(1.028);}
-}
-@media (max-width: 575px) {
-  .dashboard-card { min-height: 110px; }
-  .dashboard-card .icon-bg { font-size: 1.7rem; top: 0.7rem; right: 0.7rem;}
-  .dashboard-card .display-4 { font-size: 1.3rem; }
-}
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet">
+{# 
+  Define o título da aba do navegador. 
+  Esse conteúdo vai preencher o bloco "title" definido no layout base.
+#}
+{% block title %}Visão geral{% endblock %}
+
+{# 
+  Bloco de estilos (CSS).
+  Aqui adicionamos fontes, variáveis CSS e estilos do dashboard.
+#}
+{% block styles %}
+  {{ parent() }}
+  {% include 'Admin/Partials/_dashboard_styles.twig' %}
 {% endblock %}
 
-{#  <h4 class="text-muted mt-3 mb-4">Olá {{ user.nome|split(' ')[0]|capitalize }}!</span></h4>#}
+{# 
+  Bloco de conteúdo principal do dashboard.
+#}
+{% block content %}
+  {# Cabeçalho do dashboard: título e ícone #}
+  {% include 'Admin/Partials/_dashboard_header.twig' with {
+    title: title,
+    icon: 'fas fa-tachometer-alt'
+  } %}
 
-   {# --------- HEADER (Título e Breadcrumb) --------- #}
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1><i class="fas fa-tachometer-alt"></i> {{ title }}</h1>
+  <section class="content">
+    <div class="container-fluid" id="dashboardExportArea">
+
+      {# ---- KPIs principais (cards com números resumidos) ---- #}
+      <div class="row">
+        {# Total de usuários #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/users',
+            icon: 'fas fa-users',
+            gradient: 'primary',
+            title: 'Usuários',
+            value: total_users,
+            btn_text: 'Ver todos'
+          } %}
         </div>
-        <div class="col-sm-6">
-          {% include 'Partials/_breadcrumb.twig' %}
+
+        {# Total de ferramentas #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/tools',
+            icon: 'fas fa-tools',
+            gradient: 'info',
+            title: 'Ferramentas',
+            value: total_tools,
+            btn_text: 'Ver todas'
+          } %}
+        </div>
+
+        {# Total de posts #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/posts',
+            icon: 'fas fa-comments',
+            gradient: 'secondary',
+            title: 'Posts',
+            value: total_posts,
+            btn_text: 'Ver todos'
+          } %}
+        </div>
+
+        {# Total de ferramentas danificadas #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/tools?type_tool=Danificada',
+            icon: 'fas fa-exclamation-triangle',
+            gradient: 'danger',
+            title: 'Ferramentas danificadas',
+            value: tools_damaged,
+            btn_text: 'Ver danificadas'
+          } %}
         </div>
       </div>
-    </div>
-  </section>
 
+      {# ---- Barra de filtros rápidos ---- #}
+      {% include 'Admin/Partials/_quick_filters.twig' with {
+        filters: [
+          { url: '/admin/users?status=Ativo', color: 'success', icon: 'fas fa-user-check', title: 'Usuários ativos', label: 'Usuários ativos' },
+          { url: '/admin/users?status=Pendente', color: 'warning', icon: 'fas fa-user-clock', title: 'Usuários pendentes', label: 'Pendentes' },
+          { url: '/admin/tools?type_tool=Usada', color: 'info', icon: 'fas fa-recycle', title: 'Ferramentas usadas', label: 'Ferramentas usadas' },
+          { url: '/admin/tools?recent_days=30', color: 'primary', icon: 'fas fa-bolt', title: 'Ferramentas adquiridas 30 dias', label: 'Aquis. 30 dias' },
+          { url: '/admin/tools?cat_tool=Ferramentas%20de%20marcenaria', color: 'secondary', icon: 'fas fa-hammer', title: 'Categoria marcenaria', label: 'Marcenaria' }
+        ]
+      } %}
 
-<div class="row">
+      {# ---- Destaques por período (últimos 30 dias) ---- #}
+      <div class="row">
+        {# Novos usuários #}
+        <div class="col-12 col-md-4 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/users?recent_days=30',
+            icon: 'fas fa-user-plus',
+            gradient: 'success',
+            title: 'Usuários (últimos 30 dias)',
+            value: users_last30,
+            btn_text: 'Filtrar 30 dias'
+          } %}
+        </div>
 
-    <!-- Card Total Usuários -->
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-        <a href="/admin/users" class="text-decoration-none">
-            <div class="card dashboard-card bg-gradient-info text-center h-100">
-                <span class="icon-bg"><i class="fas fa-users"></i></span>
-                <div class="card-body position-relative">
-                    <div class="card-title">Total Usuários</div>
-                    <div class="display-4">{{ total_usuarios }}</div>
-                    <div><span class="btn btn-see">Ver todos</span></div>
-                </div>
+        {# Novas ferramentas adquiridas #}
+        <div class="col-12 col-md-4 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/tools?recent_days=30',
+            icon: 'fas fa-bolt',
+            gradient: 'warning',
+            title: 'Ferramentas adquiridas (30 dias)',
+            value: tools_last30,
+            btn_text: 'Filtrar 30 dias'
+          } %}
+        </div>
+
+        {# Novos posts realizados #}
+        <div class="col-12 col-md-4 mb-4">
+          {% include 'Admin/Partials/_dashboard_card.twig' with {
+            url: '/admin/posts?recent_days=30',
+            icon: 'fas fa-bolt',
+            gradient: 'primary',
+            title: 'Posts realizados (30 dias)',
+            value: posts_last30,
+            btn_text: 'Filtrar 30 dias'
+          } %}
+        </div>
+      </div>
+
+      {# ---- Gráficos com Chart.js ---- #}
+      <div class="row">
+        {# Gráfico de usuários por status #}
+        {% include 'Admin/Partials/_chart.twig' with {
+          id: 'chartUsersStatus',
+          icon: 'fas fa-chart-pie',
+          title: 'Usuários por status',
+          url: '/admin/users/dashboard'
+        } %}
+
+        {# Gráfico de ferramentas por tipo #}
+        {% include 'Admin/Partials/_chart.twig' with {
+          id: 'chartToolsType',
+          icon: 'fas fa-chart-doughnut',
+          title: 'Ferramentas por tipo',
+          url: '/admin/tools/dashboard'
+        } %}
+      </div>
+
+      {# ---- Widget de saúde do sistema ---- #}
+      <div class="row">
+        <div class="col-12 mb-4">
+          {% include 'Admin/Partials/_system_health.twig' with {
+            storage_usage_pct: storage_usage_pct|default(42),
+            storage_used_h: storage_used_h|default('420 MB'),
+            storage_total_h: storage_total_h|default('1 GB'),
+            jobs_pending: jobs_pending|default(0),
+            emails_today: emails_today|default(0),
+            backup_ok: backup_ok|default(true),
+            backup_human: backup_human|default('há 12h')
+          } %}
+        </div>
+      </div>
+
+      {# ---- Ações rápidas (atalhos do painel) ---- #}
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-bolt mr-1"></i> Ações Rápidas
+              </h3>
             </div>
-        </a>
-    </div>
-
-
-
-    <!-- Cards por Status -->
-    {% set status_colors = {'Ativo':'success','Inativo':'secondary','Pendente':'warning','Banido':'danger'} %}
-    {% set status_icons = {'Ativo':'fa-user-check','Inativo':'fa-user-times','Pendente':'fa-user-clock','Banido':'fa-user-slash'} %}
-    {% for s in status_options %}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-        <a href="/admin/users?status={{ s }}" class="text-decoration-none">
-            <div class="card dashboard-card bg-gradient-{{ status_colors[s]|default('info') }} text-center h-100">
-                <span class="icon-bg"><i class="fas {{ status_icons[s]|default('fa-user') }}"></i></span>
-                <div class="card-body position-relative">
-                    <div class="card-title">{{ s }}</div>
-                    <div class="display-4">{{ status_counts[s]|default(0) }}</div>
-                    <div><span class="btn btn-see">Ver {{ s|lower }}</span></div>
-                </div>
-            </div>
-        </a>
-    </div>
-    {% endfor %}
-
-    <!-- Cards por Cargo -->
-    {% set cargo_colors = {'Admin':'primary','Editor':'info','Moderador':'warning','Usuário':'light'} %}
-    {% set cargo_icons = {'Admin':'fa-user-shield','Editor':'fa-user-edit','Moderador':'fa-user-cog','Usuário':'fa-user'} %}
-    {% for c in cargo_options %}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-        <a href="/admin/users?cargo={{ c }}" class="text-decoration-none">
-            <div class="card dashboard-card 
-                        {% if cargo_colors[c] == 'light' %}text-dark{% else %}text-white{% endif %}
-                        bg-gradient-{{ cargo_colors[c]|default('info') }} text-center h-100">
-                <span class="icon-bg"><i class="fas {{ cargo_icons[c]|default('fa-user') }}"></i></span>
-                <div class="card-body position-relative">
-                    <div class="card-title">{{ c }}</div>
-                    <div class="display-4">{{ cargo_counts[c]|default(0) }}</div>
-                    <div><span class="btn btn-see">Ver {{ c|lower }}</span></div>
-                </div>
-            </div>
-        </a>
-    </div>
-    {% endfor %}
+            <div class="card-body d-flex flex-column flex-sm-row flex-wrap">
+  <a href="/admin/users/create" class="btn btn-primary mb-2 mr-sm-2 flex-fill">
+    <i class="fas fa-user-plus mr-1"></i> Novo usuário
+  </a>
+  <a href="/admin/tools/create" class="btn btn-success mb-2 mr-sm-2 flex-fill">
+    <i class="fas fa-plus mr-1"></i> Nova ferramenta
+  </a>
+  <a href="/admin/posts/create" class="btn btn-danger mb-2 mr-sm-2 flex-fill">
+    <i class="fas fa-plus mr-1"></i> Nova postagem
+  </a>
+  <a href="/admin/tools?type_tool=Usada" class="btn btn-info mb-2 mr-sm-2 flex-fill">
+    <i class="fas fa-filter mr-1"></i> Ferramentas usadas
+  </a>
+  <a href="/admin/tools?cat_tool=Ferramentas%20de%20marcenaria" class="btn btn-secondary mb-2 flex-fill">
+    <i class="fas fa-filter mr-1"></i> Categoria: marcenaria
+  </a>
 </div>
 
+          </div>
+        </div>
+      </div>
 
+      {# ---- Atividade recente (últimos registros) ---- #}
+      <div class="row">
+        {# Tabela de usuários recentes #}
+{% include 'Admin/Partials/_recent_table.twig' with {
+  title: 'Usuários recentes',
+  icon: 'fas fa-history',
+  url: '/admin/users',
+  columns: [
+    { label: 'Nome', field: 'nome', link: '/admin/users/show' },
+    { label: 'E-mail', field: 'email' },
+    { label: 'Cadastro', field: 'data_cadastro', align: 'right' }
+  ],
+  rows: recent_users
+} %}
+
+
+        {# Tabela de ferramentas recentes #}
+        {% include 'Admin/Partials/_recent_table.twig' with {
+  title: 'Ferramentas recentes',
+  icon: 'fas fa-history',
+  url: '/admin/tools',
+  columns: [
+    { label: 'Descrição', field: 'desc_tool', link: '/admin/tools/show' },
+    { label: 'Categoria', field: 'cat_tool' },
+    { label: 'Aquisição', field: 'data_aquisicao', align: 'right' }
+  ],
+  rows: recent_tools
+} %}
+
+      </div>
+
+    </div>
+  </section>
+{% endblock %}
+
+{# 
+  Scripts específicos do dashboard.
+  Inclui o Chart.js e a configuração dinâmica dos gráficos.
+#}
+{% block scripts %}
+  {{ parent() }}
+  {% include 'Admin/Partials/_dashboard_scripts.twig' with {
+    charts: {
+      chartUsersStatus: { type: 'doughnut', data: users_by_status },
+      chartToolsType:   { type: 'pie', data: tools_by_type }
+    }
+  } %}
 {% endblock %}

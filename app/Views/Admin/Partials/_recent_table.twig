@@ -1,0 +1,53 @@
+{# Partials/_recent_table.twig #}
+{#<div class="col-12 col-lg-6">#}
+  {#<div class="card shadow-sm">#}
+<div class="col-12">
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="{{ icon }} mr-1"></i> {{ title }}
+      </h3>
+      <div class="card-tools">
+        <a href="{{ url }}" class="btn btn-tool" title="Listar">
+          <i class="fas fa-list"></i>
+        </a>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover table-sm mb-0">
+        <thead>
+          <tr>
+            {% for col in columns %}
+              <th {% if col.align == 'right' %}class="text-right"{% endif %}>
+                {{ col.label }}
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              {% for col in columns %}
+                <td {% if col.align == 'right' %}class="text-right"{% endif %}>
+                  {% if col.link is defined %}
+                    <a href="{{ col.link }}/{{ attribute(row, 'id') }}">
+                      {{ attribute(row, col.field) }}
+                    </a>
+                  {% else %}
+                    {{ attribute(row, col.field) }}
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="{{ columns|length }}" class="text-center text-muted py-3">
+                Sem registros recentes.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

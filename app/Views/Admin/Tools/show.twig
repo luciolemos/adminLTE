@@ -1,86 +1,12 @@
 {% extends "layout_admin.twig" %}
-
 {% block title %}Detalhes da Ferramenta{% endblock %}
 
 {% block styles %}
   {{ parent() }}
-  <style>
-    .card-footer.d-flex .btn,
-    .card-footer.d-flex form {
-      width: 100%;
-      margin-bottom: .5rem;
-    }
-    .card-footer.d-flex form {
-      display: block !important;
-    }
-    @media (min-width: 768px) {
-      .card-footer.d-flex {
-        flex-direction: row !important;
-        justify-content: flex-end !important;
-        align-items: center !important;
-        gap: .75rem;
-      }
-      .card-footer.d-flex .btn,
-      .card-footer.d-flex form {
-        width: auto !important;
-        margin-bottom: 0 !important;
-      }
-    }
-
-    /* ===== Ajustes específicos para impressão ===== */
-    @media print {
-      /* Mostra imagem inteira sem corte */
-      #toolShowCard img {
-        width: 100% !important;
-        height: auto !important;
-        object-fit: contain !important;
-      }
-
-      /* Imagem responsiva: ocupa 100% do container, sem estourar */
-#toolShowCard .tool-img {
-  width: 100%;
-  height: auto;        /* evita corte/estouro no mobile */
-  max-width: 300px;    /* limita no desktop */
-  object-fit: contain; /* mobile: mostra inteira */
-}
-
-/* No >= md, aplicamos o crop 3:2 com altura fixa */
-@media (min-width: 768px) {
-  #toolShowCard .tool-img {
-    height: 200px;
-    object-fit: cover; /* desktop: mantém corte bonito dentro de 300x200 */
-  }
-}
-
-
-      /* Remove cabeçalhos, rodapés e barra lateral */
-      .content-header,
-      .card-header,
-      .card-footer,
-      .navbar,
-      .main-footer,
-      .sidebar {
-        display: none !important;
-      }
-
-      /* Limpa bordas/sombras para impressão */
-      #toolShowCard {
-        box-shadow: none !important;
-        border: 0 !important;
-        page-break-inside: avoid;
-      }
-
-      /* Mantém cores mais fiéis na impressão */
-      body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-    }
-  </style>
+  {% include 'Admin/Partials/_show_common_styles.twig' %}
 {% endblock %}
 
 {% block content %}
-  {# --------- HEADER (Título e Breadcrumb) --------- #}
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -96,216 +22,53 @@
 
   <section class="content">
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div class="card card-outline shadow" id="toolShowCard">
+      <div class="card show-card shadow" id="toolShowCard">
+        <div class="card-header">
+          <div class="card-tools">
+            <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+            </a>
+            <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
+              <i class="fas fa-expand"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
 
-            <div class="card-header">
-              <div class="card-tools">
-                <a href="/admin/dashboard" class="btn btn-tool" title="Dashboard">
-                  <i class="fas fa-tachometer-alt"></i>
-                </a>
-                {# <a href="/admin/tools/create" class="btn btn-tool" title="Nova ferramenta">
-                  <i class="fas fa-plus"></i>
-                </a> #}
-                <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximizar">
-                  <i class="fas fa-expand"></i>
-                </button>
-                <div class="btn-group">
-                  <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
-                    <i class="fas fa-ellipsis-v"></i>
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    {# <a href="/admin/tools/create" class="dropdown-item">
-                      <i class="fas fa-plus"></i> Nova ferramenta
-                    </a> #}
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                      <i class="fas fa-cog"></i> Configurações
-                    </a>
-                  </div>
-                </div>
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Minimizar">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 text-center mb-3">
+              <img src="{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.jpg') }}"
+                   class="rounded shadow-sm border" style="width:300px; height:200px; object-fit:cover;">
+              <h5 class="mt-2">{{ tool.desc_tool }}</h5>
+              <span class="badge badge-pill badge-info">{{ tool.type_tool }}</span>
             </div>
-
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-3 text-center mb-3">
-<img
-  src="{{ tool.img_tool|default('/assets/adminlte/dist/img/default_tool.jpg') }}"
-  alt="Imagem"
-  class="img-fluid tool-img rounded shadow border mb-3 mx-auto d-block"
-  loading="lazy"
-/>
-
-                  <h5 class="mt-2 mb-1">{{ tool.desc_tool }}</h5>
-                  <span class="badge badge-pill
-                    {% if tool.type_tool == 'Nova' %}badge-success
-                    {% elseif tool.type_tool == 'Usada' %}badge-primary
-                    {% elseif tool.type_tool == 'Restaurada' %}badge-warning
-                    {% elseif tool.type_tool == 'Danificada' %}badge-danger
-                    {% else %}badge-secondary{% endif %}">
-                    {{ tool.type_tool }}
-                  </span>
-                  <div class="mt-2">
-                    <span class="badge badge-info">{{ tool.cat_tool }}</span>
-                  </div>
-                </div>
-
-                <div class="col-md-9 pb-5">
-                  <table class="table table-bordered table-striped mb-0">
-                    <tr>
-                      <th style="width:180px;">ID</th>
-                      <td>{{ tool.id }}</td>
-                    </tr>
-                    <tr>
-                      <th>Descrição</th>
-                      <td>{{ tool.desc_tool }}</td>
-                    </tr>
-                    <tr>
-                      <th>Características</th>
-                      <td>{{ tool.caracteristica_tool|default('-')|nl2br }}</td>
-                    </tr>
-                    <tr>
-                      <th>Categoria</th>
-                      <td>{{ tool.cat_tool }}</td>
-                    </tr>
-                    <tr>
-                      <th>Estado</th>
-                      <td>
-                        <span class="badge badge-pill
-                          {% if tool.type_tool == 'Nova' %}badge-success
-                          {% elseif tool.type_tool == 'Usada' %}badge-primary
-                          {% elseif tool.type_tool == 'Restaurada' %}badge-warning
-                          {% elseif tool.type_tool == 'Danificada' %}badge-danger
-                          {% else %}badge-secondary{% endif %}">
-                          {{ tool.type_tool }}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Data de Aquisição</th>
-                      <td>{{ tool.data_aquisicao ? tool.data_aquisicao|date('d/m/Y') : '-' }}</td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
-
-              {% include "Admin/Tools/_footer_actions.twig" with {
-                'show_save': false,
-                'show_cancel': false,
-                'show_delete': true,
-                'delete_url': '/admin/tools/delete/' ~ tool.id,
-                'csrf_token': csrf_token,
-                'show_print': true,
-                'show_pdf': true
-              } %}
-
+            <div class="col-md-9">
+              <table class="table table-bordered table-striped mb-0">
+                <tr><th>ID</th><td>{{ tool.id }}</td></tr>
+                <tr><th>Descrição</th><td>{{ tool.desc_tool }}</td></tr>
+                <tr><th>Características</th><td>{{ tool.caracteristica_tool|default('-')|nl2br }}</td></tr>
+                <tr><th>Categoria</th><td>{{ tool.cat_tool }}</td></tr>
+                <tr><th>Estado</th><td>{{ tool.type_tool }}</td></tr>
+                <tr><th>Data de Aquisição</th><td>{{ tool.data_aquisicao|date('d/m/Y') }}</td></tr>
+              </table>
             </div>
           </div>
         </div>
+
+        {% include 'Admin/Partials/_footer_actions.twig' with {
+          module: 'tools',
+          entity: tool,
+          csrf_token: csrf_token,
+          show_print: true,
+          show_pdf: true,
+          show_edit: true,
+          show_delete: true,
+          show_cancel: true
+        } %}
       </div>
     </div>
   </section>
-{% endblock %}
-
-{% block scripts %}
-  {{ parent() }}
-
-  {# Carrega libs SEM SRI (para teste). Depois, se quiser, colocamos SRI correto. #}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <script>
-    (function bootExport () {
-      const log  = (...a) => console.log('[Export]', ...a);
-      const warn = (...a) => console.warn('[Export]', ...a);
-      const err  = (...a) => console.error('[Export]', ...a);
-
-      function libsReady() {
-        return window.html2canvas && window.jspdf && window.jspdf.jsPDF;
-      }
-      function waitLibs(maxWaitMs = 2000) {
-        return new Promise((resolve, reject) => {
-          const t0 = performance.now();
-          (function spin() {
-            if (libsReady()) return resolve(true);
-            if (performance.now() - t0 > maxWaitMs) return reject(new Error('libs timeout'));
-            requestAnimationFrame(spin);
-          })();
-        });
-      }
-
-      document.addEventListener('DOMContentLoaded', async function () {
-        try {
-          await waitLibs();
-          const jsPDF = window.jspdf.jsPDF;
-
-          const area     = document.getElementById('toolShowCard') || document.querySelector('.card.card-outline.shadow');
-          const btnPrint = document.getElementById('btnPrint');
-          const btnPdf   = document.getElementById('btnPdf');
-
-          if (!area)     warn('Elemento da área não encontrado (#toolShowCard).');
-          if (!btnPrint) warn('Botão #btnPrint não encontrado.');
-          if (!btnPdf)   warn('Botão #btnPdf não encontrado.');
-
-          if (btnPrint) {
-            btnPrint.addEventListener('click', () => {
-              const img = area && area.querySelector('img');
-              if (img && !img.complete) {
-                img.addEventListener('load', () => window.print(), { once: true });
-              } else {
-                window.print();
-              }
-            });
-          }
-
-          if (btnPdf && area) {
-            btnPdf.addEventListener('click', async function () {
-              try {
-                await new Promise(r => setTimeout(r, 150));
-                window.dispatchEvent(new Event('resize'));
-
-                const canvas = await html2canvas(area, {
-                  scale: 2,
-                  useCORS: true,
-                  logging: false,
-                  windowWidth: document.documentElement.clientWidth
-                });
-
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'pt', 'a4');
-
-                const pageW = pdf.internal.pageSize.getWidth();
-                const pageH = pdf.internal.pageSize.getHeight();
-
-                const imgW = canvas.width, imgH = canvas.height;
-                const ratio = Math.min(pageW / imgW, pageH / imgH);
-
-                const pdfW = imgW * ratio;
-                const pdfH = imgH * ratio;
-
-                const marginX = (pageW - pdfW) / 2;
-                const marginY = 24;
-
-                pdf.addImage(imgData, 'PNG', marginX, marginY, pdfW, pdfH, '', 'FAST');
-                pdf.save('detalhes-ferramenta-{{ tool.id }}.pdf');
-              } catch (e) {
-                err('Falha ao gerar PDF:', e);
-                alert('Não foi possível gerar o PDF. Veja o console para detalhes.');
-              }
-            });
-          }
-
-          log('Pronto: export (print/pdf) inicializado.');
-        } catch (e) {
-          err('Bibliotecas não inicializadas:', e);
-          alert('Falha ao carregar bibliotecas de PDF. Veja o console.');
-        }
-      });
-    })();
-  </script>
 {% endblock %}

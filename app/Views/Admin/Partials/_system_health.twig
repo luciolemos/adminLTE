@@ -1,0 +1,43 @@
+{# Partials/_system_health.twig #}
+<div class="card shadow-sm sys-health">
+  <div class="card-header">
+    <h3 class="card-title mb-0">
+      <i class="fas fa-stethoscope mr-1"></i> Saúde do sistema
+    </h3>
+  </div>
+  <div class="card-body">
+    <div class="d-flex flex-wrap align-items-center">
+      
+      <div class="mr-4 mb-3">
+        <span class="text-muted d-block">Uso de armazenamento</span>
+        <div class="progress mt-2" style="width:260px;">
+          <div class="progress-bar bg-info" role="progressbar"
+               style="width:{{ storage_usage_pct|default(42) }}%"></div>
+        </div>
+        <small class="text-muted">
+          {{ storage_used_h|default('420 MB') }} / {{ storage_total_h|default('1 GB') }}
+        </small>
+      </div>
+
+      <div class="mr-4 mb-3">
+        <span class="text-muted d-block">Jobs em fila</span>
+        <span class="badge badge-{{ jobs_pending > 5 ? 'warning' : 'success' }} ml-1">
+          {{ jobs_pending|default(0) }} pendentes
+        </span>
+      </div>
+
+      <div class="mr-4 mb-3">
+        <span class="text-muted d-block">E-mails hoje</span>
+        <span class="badge badge-primary ml-1">{{ emails_today|default(0) }}</span>
+      </div>
+
+      <div class="mb-3">
+        <span class="text-muted d-block">Último backup</span>
+        <span class="badge badge-{{ backup_ok ? 'success' : 'danger' }} ml-1">
+          {{ backup_human|default('há 12h') }}
+        </span>
+      </div>
+
+    </div>
+  </div>
+</div>

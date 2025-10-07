@@ -1,0 +1,136 @@
+{# Extende o layout principal do admin (contém <html>, <head>, navbar, sidebar etc.) #}
+{% extends "layout_admin.twig" %}
+
+{# Título da página (aba do navegador) #}
+{% block title %}Dashboard de usuários{% endblock %}
+
+{% block styles %}
+  {{ parent() }}
+  {% include 'Admin/Partials/_dashboard_styles.twig' %}
+{% endblock %}
+
+{% block content %}
+  {# ---- HEADER (título + breadcrumb) ---- #}
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>
+            <i class="fas fa-tachometer-alt"></i> {{ title }}
+          </h1>
+        </div>
+        <div class="col-sm-6">
+          {% include 'Partials/_breadcrumb.twig' %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ---- CONTEÚDO PRINCIPAL ---- #}
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+
+        {# ---- Card: Total de Usuários ---- #}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          <a href="/admin/users" class="text-decoration-none">
+            <div class="card dashboard-card bg-gradient-info text-center h-100">
+              <span class="icon-bg"><i class="fas fa-users"></i></span>
+              <div class="card-body position-relative">
+                <div class="card-title">Total Usuários</div>
+                <div class="display-4">{{ total_usuarios }}</div>
+                <div><span class="btn btn-see">Ver todos</span></div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        {# ---- Cards por Status ---- #}
+        {% set status_colors = {
+          'Ativo':'success',
+          'Inativo':'secondary',
+          'Pendente':'warning',
+          'Banido':'danger'
+        } %}
+        {% set status_icons = {
+          'Ativo':'fa-user-check',
+          'Inativo':'fa-user-times',
+          'Pendente':'fa-user-clock',
+          'Banido':'fa-user-slash'
+        } %}
+
+        {% for s in status_options %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/users?status={{ s }}" class="text-decoration-none">
+              <div class="card dashboard-card bg-gradient-{{ status_colors[s]|default('info') }} text-center h-100">
+                <span class="icon-bg">
+                  <i class="fas {{ status_icons[s]|default('fa-user') }}"></i>
+                </span>
+                <div class="card-body position-relative">
+                  <div class="card-title">{{ s }}</div>
+                  <div class="display-4">{{ status_counts[s]|default(0) }}</div>
+                  <div><span class="btn btn-see">Ver {{ s|lower }}</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+        {# ---- Cards por Cargo ---- #}
+        {% set cargo_colors = {
+          'Admin':'primary',
+          'Editor':'info',
+          'Moderador':'warning',
+          'Usuário':'light'
+        } %}
+        {% set cargo_icons = {
+          'Admin':'fa-user-shield',
+          'Editor':'fa-user-edit',
+          'Moderador':'fa-user-cog',
+          'Usuário':'fa-user'
+        } %}
+
+        {% for c in cargo_options %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="/admin/users?cargo={{ c }}" class="text-decoration-none">
+              <div class="card dashboard-card
+                          {% if cargo_colors[c] == 'light' %}
+                            text-dark
+                          {% else %}
+                            text-white
+                          {% endif %}
+                          bg-gradient-{{ cargo_colors[c]|default('info') }} text-center h-100">
+                <span class="icon-bg">
+                  <i class="fas {{ cargo_icons[c]|default('fa-user') }}"></i>
+                </span>
+                <div class="card-body position-relative">
+                  <div class="card-title">{{ c }}</div>
+                  <div class="display-4">{{ cargo_counts[c]|default(0) }}</div>
+                  <div><span class="btn btn-see">Ver {{ c|lower }}</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}  
+      </div>
+
+      
+{# === TABELA DE USERS RECENTES === #}
+      <div class="row">
+  {% include 'Admin/Partials/_recent_table.twig' with {
+    title: 'Usuários recentes',
+    icon: 'fas fa-user-clock',
+    url: '/admin/users',
+    columns: [
+      { label: 'Nome', field: 'nome', link: '/admin/users/show' },
+      { label: 'Email', field: 'email' },
+      { label: 'Cargo', field: 'cargo' },
+      { label: 'Criado em', field: 'data_cadastro', align: 'right' }
+    ],
+    rows: recent_users
+  } %}
+</div>
+
+    </div>
+  </section>
+{% endblock %}

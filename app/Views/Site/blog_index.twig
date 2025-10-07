@@ -1,127 +1,181 @@
 {% extends "layout_site.twig" %}
-{% block title %}Blog{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block styles %}
 <style>
-  .blog-card {
+  .featured-article {
     border-radius: 1.5rem;
     overflow: hidden;
-    box-shadow: 0 8px 32px #2222;
-    transition: transform 0.13s, box-shadow 0.13s;
+    box-shadow: 0 8px 32px #0001;
+    transition: all 0.2s ease;
     background: #fff;
-    border: none;
-    height: 100%;
+  }
+
+  .featured-article:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px #0002;
+  }
+
+  .featured-image {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+  }
+
+  .featured-body {
+    padding: 2rem;
+  }
+
+  .featured-body h2 {
+    font-weight: 700;
+    color: #2a3b8f;
+  }
+
+  .featured-body p {
+    color: #555;
+  }
+
+  .blog-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 20px #0001;
+    transition: transform 0.15s ease;
+    background: #fff;
     display: flex;
     flex-direction: column;
   }
+
   .blog-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 16px 48px #2222;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px #0002;
   }
-  .blog-post .post-image {
-  width: 100%;
-  height: auto;              /* Altura automática: mostra a imagem inteira! */
-  max-height: 360px;         /* Limite opcional: ajusta conforme seu gosto */
-  object-fit: contain;       /* NUNCA corta a imagem! Mostra tudo. */
-  object-position: center;
-  border-radius: 1.1rem;
-  box-shadow: 0 2px 18px #2651a929;
-  margin-bottom: 2rem;
-  margin-top: 1rem;
-  display: block;
-  background: #f6f8fc;      /* Fundo suave, para imagens PNG/transparentes */
-}
+
+  .blog-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
   .blog-card .card-body {
     flex: 1;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
+
   .blog-card .badge {
-    font-size: 0.88rem;
-    border-radius: 0.7rem;
-    padding: .5em .9em;
-    margin-bottom: .5em;
+    font-size: 0.9rem;
     background: linear-gradient(90deg, #4876e8, #13c3c3);
     color: #fff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.6rem;
     font-weight: 600;
+    margin-bottom: 0.6rem;
   }
-  .blog-card .author-meta {
+
+  .blog-card h5 a {
+    color: #1f3b8f;
+    text-decoration: none;
+  }
+
+  .blog-card h5 a:hover {
+    color: #13c3c3;
+  }
+
+  .author-meta {
     display: flex;
     align-items: center;
-    gap: 0.7em;
-    margin-top: 1.2em;
-    font-size: 0.98em;
-    color: #6c757d;
+    gap: .6rem;
+    margin-top: auto;
+    font-size: .9rem;
+    color: #777;
   }
-  .blog-card .author-avatar {
-    width: 36px;
-    height: 36px;
+
+  .author-avatar {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 2px 10px #0002;
   }
-  .blog-title-link {
-    color: #2547b6;
-    text-decoration: none;
-    transition: color 0.13s;
-  }
-  .blog-title-link:hover {
-    color: #13c3c3;
-    text-decoration: underline;
-  }
- @media (max-width: 767px) {
-  .blog-post .post-image {
-    max-height: 180px;       /* Diminui o limite no mobile, se quiser */
-  }
-}
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="content-header">
+{% include 'Partials/_breadcrumb.twig' %}
   <div class="container-fluid">
-    <div class="row mb-2">
-      <div class="col-sm-6">
-        <h1 class="mb-4 fw-bold text-primary"><i class="fas fa-envelope"></i> {{ title }}</h1>
-      </div>
-      <div class="col-sm-6">
-        {% include 'Partials/_breadcrumb.twig' %}
-      </div>
-    </div>
+    <h1 class="fw-bold text-primary mb-4"><i class="fas fa-blog"></i> {{ title }}</h1>    
   </div>
 </section>
-<div class="row">
-  {% for post in posts %}
-    <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex">
-      <div class="card blog-card w-100 h-100">
-        {% if post.imagem %}
-          <img src="{{ post.imagem }}" class="card-img-top" alt="Capa do post">
-        {% endif %}
-        <div class="card-body d-flex flex-column">
-          <span class="badge">{{ post.categoria|capitalize }}</span>
-          <h5 class="card-title mb-2">
-            <a href="/blog/{{ post.slug }}" class="blog-title-link">{{ post.titulo }}</a>
-          </h5>
-          <div class="text-truncate mb-2" style="max-height: 3em; color: #555;">
-            {{ post.conteudo|striptags|slice(0, 140) ~ (post.conteudo|length > 140 ? '...' : '') }}
-          </div>
-          <div class="author-meta mt-auto">
-            {% if post.autor_avatar %}
-              <img src="{{ post.autor_avatar }}" class="author-avatar" alt="Autor">
-            {% endif %}
-            <span>
-              {{ post.autor_nome }}<br>
-              <small class="text-muted">{{ post.criado_em|date('d/m/Y H:i') }}</small>
-            </span>
+
+<div class="container">
+
+  {# ============================================================
+     ARTIGO DESTAQUE
+     ============================================================ #}
+  {% if posts|length > 0 %}
+    {% set featured = posts|first %}
+    <article class="featured-article mb-5">
+      {% if featured.imagem %}
+        <img src="{{ featured.imagem }}" alt="{{ featured.titulo }}" class="featured-image">
+      {% endif %}
+      <div class="featured-body">
+        <span class="badge">{{ featured.categoria }}</span>
+        <h2><a href="/blog/{{ featured.slug }}">{{ featured.titulo }}</a></h2>
+        <p>{{ featured.conteudo|striptags|slice(0, 260) ~ '...' }}</p>
+        <div class="author-meta mt-3">
+          {% if featured.autor_avatar %}
+            <img src="{{ featured.autor_avatar }}" class="author-avatar" alt="Autor">
+          {% endif %}
+          <span>{{ featured.autor_nome }} — <small>{{ featured.criado_em|date('d/m/Y H:i') }}</small></span>
+        </div>
+      </div>
+    </article>
+  {% endif %}
+
+  {# ============================================================
+     GRADE DE ARTIGOS (3 POR LINHA)
+     ============================================================ #}
+  <div class="row">
+    {% for post in posts|slice(1, 6) %}
+      <div class="col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="blog-card w-100">
+          {% if post.imagem %}
+            <img src="{{ post.imagem }}" alt="{{ post.titulo }}">
+          {% endif %}
+          <div class="card-body">
+            <span class="badge">{{ post.categoria }}</span>
+            <h5 class="card-title mb-2">
+              <a href="/blog/{{ post.slug }}">{{ post.titulo }}</a>
+            </h5>
+            <p class="text-muted mb-3">{{ post.conteudo|striptags|slice(0, 120) ~ '...' }}</p>
+            <div class="author-meta">
+              {% if post.autor_avatar %}
+                <img src="{{ post.autor_avatar }}" class="author-avatar" alt="Autor">
+              {% endif %}
+              <span>{{ post.autor_nome }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  {% else %}
-    <div class="col-12">
-      <div class="alert alert-info text-center">Nenhum post publicado ainda.</div>
-    </div>
-  {% endfor %}
+    {% endfor %}
+  </div>
+
+  {# ============================================================
+     ÚLTIMOS ARTIGOS (LISTA SIMPLES)
+     ============================================================ #}
+  {% if posts|length > 6 %}
+    <hr class="my-5">
+    <h3 class="text-primary mb-4"><i class="fas fa-clock"></i> Últimos Artigos</h3>
+    <ul class="list-group list-group-flush">
+      {% for post in posts|slice(7, 10) %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="/blog/{{ post.slug }}" class="fw-semibold">{{ post.titulo }}</a>
+          <small class="text-muted">{{ post.criado_em|date('d/m/Y') }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 </div>
 {% endblock %}

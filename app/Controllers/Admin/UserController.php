@@ -12,25 +12,82 @@ class UserController extends Controller
     private $statusOptions = ['Ativo', 'Inativo', 'Pendente', 'Banido'];
     private $cargoOptions  = ['Admin', 'Editor', 'Moderador', 'Usuário'];
 
+    /**
+     * Dashboard de Usuários (cards/kpis).
+     * GET /admin/users/dashboard
+     */
+    public function dashboard()
+    {
+        $this->requirePermission('user_view');
+
+        $userModel = new User();
+
+        // Totais gerais
+        $total_usuarios = $userModel->countAll();
+
+        // Totais por status
+        $status_counts = [];
+        foreach ($this->statusOptions as $s) {
+            $status_counts[$s] = $userModel->countByStatus($s);
+        }
+
+        // Totais por cargo
+        $cargo_counts = [];
+        foreach ($this->cargoOptions as $c) {
+            $cargo_counts[$c] = $userModel->countByCargo($c);
+        }
+
+        // KPIs extras
+        $recent_30_days_count = $userModel->countCreatedLastDays(30);
+        $recent_users         = $userModel->getRecent(5);
+
+        $breadcrumb = [
+            ['title' => 'Dashboard de usuários', 'url' => '/admin/users/dashboard'],
+            ['title' => 'Usuários', 'url' => '/admin/users'],
+            ['title' => 'Visão geral', 'url' => null],
+        ];
+
+        return $this->render('Admin/Users/dashboard', [
+            'title'                => 'Dashboard de Usuários',
+            'user'                 => $_SESSION['user'],
+            'breadcrumb'           => $breadcrumb,
+            'total_usuarios'       => $total_usuarios,
+            'status_options'       => $this->statusOptions,
+            'status_counts'        => $status_counts,
+            'cargo_options'        => $this->cargoOptions,
+            'cargo_counts'         => $cargo_counts,
+            'recent_30_days_count' => $recent_30_days_count,
+            'recent_users'         => $recent_users,
+        ]);
+    }
+
+    /**
+     * Lista de usuários com filtros opcionais (?status=Ativo&cargo=Admin&recent_days=30).
+     */
     public function index()
     {
         $this->requirePermission('user_view');
 
-        $status    = $_GET['status'] ?? null;
-        $cargo     = $_GET['cargo']  ?? null;
         $userModel = new User();
 
-        if ($status && in_array($status, $this->statusOptions)) {
+        $status = $_GET['status'] ?? null;
+        $cargo  = $_GET['cargo']  ?? null;
+        $recent = $_GET['recent_days'] ?? null;
+
+        if ($status && in_array($status, $this->statusOptions, true)) {
             $usuarios = $userModel->findByStatus($status);
-        } elseif ($cargo && in_array($cargo, $this->cargoOptions)) {
+        } elseif ($cargo && in_array($cargo, $this->cargoOptions, true)) {
             $usuarios = $userModel->findByCargo($cargo);
+        } elseif ($recent) {
+            // precisa do método getCreatedLastDays no model
+            $usuarios = $userModel->getCreatedLastDays((int) $recent);
         } else {
             $usuarios = $userModel->getAll();
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Usuários', 'url' => null],
+            ['title' => 'Dashboard de usuários', 'url' => '/admin/users/dashboard'],
+            ['title' => 'Usuários',  'url' => null],
         ];
 
         return $this->render('Admin/Users/index', [
@@ -39,10 +96,13 @@ class UserController extends Controller
             'usuarios'   => $usuarios,
             'user'       => $_SESSION['user'],
             'success'    => get_flash('success'),
-            'error'      => get_flash('error')
+            'error'      => get_flash('error'),
         ]);
     }
 
+    /**
+     * Criação de usuário.
+     */
     public function create()
     {
         $this->requirePermission('user_create');
@@ -56,9 +116,12 @@ class UserController extends Controller
             if (!csrf_validate($_POST['csrf_token'] ?? '')) {
                 $errors['csrf'] = 'Token CSRF inválido. Recarregue a página.';
             }
+
             $data = $_POST;
             $avatar = validate_avatar_upload($_FILES['avatar'] ?? []);
-            if ($avatar) $data['avatar'] = $avatar;
+            if ($avatar) {
+                $data['avatar'] = $avatar;
+            }
 
             $userModel = new User();
             if ($userModel->create($data, $errors)) {
@@ -69,8 +132,8 @@ class UserController extends Controller
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Usuários', 'url' => '/admin/users'],
+            ['title' => 'Dashboard de usuários', 'url' => '/admin/users/dashboard'],
+            ['title' => 'Usuários',  'url' => '/admin/users'],
             ['title' => 'Novo usuário', 'url' => null],
         ];
 
@@ -80,10 +143,13 @@ class UserController extends Controller
             'user'       => $_SESSION['user'],
             'usuario'    => $usuario,
             'errors'     => $errors,
-            'csrf_token' => csrf_token()
+            'csrf_token' => csrf_token(),
         ]);
     }
 
+    /**
+     * Edição de usuário.
+     */
     public function edit($id)
     {
         $this->requirePermission('user_edit');
@@ -99,9 +165,6 @@ class UserController extends Controller
             $this->redirect('/admin/users');
         }
 
-            // Pegue o parâmetro return_to da URL (list ou show)
-            $return_to = $_POST['return_to'] ?? ($_GET['return_to'] ?? 'show');
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!csrf_validate($_POST['csrf_token'] ?? '')) {
                 $errors['csrf'] = 'Token CSRF inválido. Recarregue a página.';
@@ -109,40 +172,42 @@ class UserController extends Controller
 
             $data = $_POST;
             $avatar = validate_avatar_upload($_FILES['avatar'] ?? []);
-            if ($avatar) $data['avatar'] = $avatar;
+            if ($avatar) {
+                $data['avatar'] = $avatar;
+            }
 
             if ($userModel->update($id, $data, $errors)) {
                 set_flash('success', 'Usuário atualizado com sucesso!');
+
+                // Se o usuário logado foi alterado, atualiza a sessão
                 if ($_SESSION['user']['id'] == $id) {
                     $_SESSION['user'] = $userModel->findById($id);
                 }
-               // Redirecionamento flexível
-                if ($return_to === 'list') {
-                $this->redirect('/admin/users');
-                } else {
+
                 $this->redirect("/admin/users/show/{$id}");
-                }
             }
             $usuario = array_merge($usuario, $data);
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Usuários', 'url' => '/admin/users'],
-            ['title' => 'Edição do usuário', 'url' => null],
+            ['title' => 'Dashboard de usuários', 'url' => '/admin/users/dashboard'],
+            ['title' => 'Usuários',  'url' => '/admin/users'],
+            ['title' => 'Editar usuário', 'url' => null],
         ];
 
         return $this->render('Admin/Users/edit', [
             'breadcrumb' => $breadcrumb,
-            'title'      => 'Atualizar usuário',
+            'title'      => 'Editar usuário',
             'usuario'    => $usuario,
             'user'       => $_SESSION['user'],
             'errors'     => $errors,
             'csrf_token' => csrf_token(),
-            'return_to'  => $return_to
         ]);
     }
 
+    /**
+     * Exclui usuário.
+     */
     public function delete($id)
     {
         $this->requirePermission('user_delete');
@@ -152,14 +217,17 @@ class UserController extends Controller
 
         if (!$usuario) {
             set_flash('error', 'Usuário não encontrado!');
-            $this->redirect('/admin/users');
+        } else {
+            $userModel->delete($id);
+            set_flash('success', 'Usuário excluído com sucesso!');
         }
 
-        $userModel->delete($id);
-        set_flash('success', 'Usuário excluído com sucesso!');
         $this->redirect('/admin/users');
     }
 
+    /**
+     * Exibe detalhes de um usuário.
+     */
     public function show($id)
     {
         $this->requirePermission('user_view');
@@ -173,18 +241,18 @@ class UserController extends Controller
         }
 
         $breadcrumb = [
-            ['title' => 'Dashboard', 'url' => '/admin/dashboard'],
-            ['title' => 'Usuários', 'url' => '/admin/users'],
+            ['title' => 'Dashboard de usuários', 'url' => '/admin/users/dashboard'],
+            ['title' => 'Usuários',  'url' => '/admin/users'],
             ['title' => 'Detalhes do usuário', 'url' => null],
         ];
 
         return $this->render('Admin/Users/show', [
             'breadcrumb' => $breadcrumb,
-            'title'      => 'Visualizar usuário',
+            'title'      => 'Detalhes do usuário',
             'usuario'    => $usuario,
             'user'       => $_SESSION['user'],
-            'success'    => get_flash('success'),  // <<< ADICIONE ESTA LINHA
-            'error'      => get_flash('error')     // <<< E ESTA, se quiser erros também
+            'success'    => get_flash('success'),
+            'error'      => get_flash('error'),
         ]);
     }
 
